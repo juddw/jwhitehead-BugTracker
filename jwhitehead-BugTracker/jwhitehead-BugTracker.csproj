@@ -190,6 +190,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\ProjectsController.cs" />
@@ -199,6 +200,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Helpers\AdminUserViewModels.cs" />
     <Compile Include="Models\CodeFirst\Project.cs" />
     <Compile Include="Models\CodeFirst\Ticket.cs" />
     <Compile Include="Models\CodeFirst\TicketAttachment.cs" />
@@ -207,8 +209,11 @@
     <Compile Include="Models\CodeFirst\TicketPriority.cs" />
     <Compile Include="Models\CodeFirst\TicketStatus.cs" />
     <Compile Include="Models\CodeFirst\TicketType.cs" />
+    <Compile Include="Models\Helpers\ProjectAssignHelper.cs" />
+    <Compile Include="Models\Helpers\UserRoleHelper.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Universal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -281,6 +286,8 @@
     <Content Include="Views\Tickets\Details.cshtml" />
     <Content Include="Views\Tickets\Edit.cshtml" />
     <Content Include="Views\Tickets\Index.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\Admin\EditUserRoles.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

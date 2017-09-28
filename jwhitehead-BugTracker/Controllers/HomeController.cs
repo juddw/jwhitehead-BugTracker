@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace jwhitehead_BugTracker.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : Universal
     {
         public ActionResult Index()
         {
@@ -25,6 +25,15 @@ namespace jwhitehead_BugTracker.Controllers
             ViewBag.Message = "Your contact page.";
 
             return View();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

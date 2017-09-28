@@ -49,6 +49,7 @@ namespace jwhitehead_BugTracker.Models
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        // this is found in the Web.config  inside the <connectionStrings>
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {

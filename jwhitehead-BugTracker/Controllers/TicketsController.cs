@@ -11,9 +11,8 @@ using jwhitehead_BugTracker.Models.CodeFirst;
 
 namespace jwhitehead_BugTracker.Controllers
 {
-    public class TicketsController : Controller
+    public class TicketsController : Universal
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Tickets
         public ActionResult Index()

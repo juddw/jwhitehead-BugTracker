@@ -1,0 +1,24 @@
+﻿@model jwhitehead_BugTracker.Models.AdminUserViewModels
+
+@{
+    ViewBag.Title = "Edit User Roles";
+}
+
+<h2>Edit User Roles</h2>
+<hr />
+
+@using (Html.BeginForm("EditUserRoles", "Admin", FormMethod.Post))
+{
+    <h4>
+        @Html.DisplayFor(model => model.User.FullName)
+        <input type="submit" value="Assign Roles" class="btn btn-default pull-right" style="margin-top: -7px" />
+    </h4>
+    <hr />
+    @Html.HiddenFor(model => model.User.Id)
+    @Html.ListBox("SelectedRoles", Model.Roles) // comes from AdminUserViewModels.cs
+}
+
+<div style="margin-top: 40px">
+    @Html.ActionLink("Back to Admin Index", "Index")
+</div>
+

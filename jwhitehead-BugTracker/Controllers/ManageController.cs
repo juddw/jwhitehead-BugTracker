@@ -11,7 +11,7 @@ using jwhitehead_BugTracker.Models;
 namespace jwhitehead_BugTracker.Controllers
 {
     [Authorize]
-    public class ManageController : Controller
+    public class ManageController : Universal
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;

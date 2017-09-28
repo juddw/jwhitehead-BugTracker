@@ -13,7 +13,7 @@ using jwhitehead_BugTracker.Models;
 namespace jwhitehead_BugTracker.Controllers
 {
     [Authorize]
-    public class AccountController : Controller
+    public class AccountController : Universal
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
