@@ -15,7 +15,7 @@
     </h4>
     <hr />
     @Html.HiddenFor(model => model.User.Id)
-    @Html.ListBox("SelectedRoles", Model.Roles) // comes from AdminUserViewModels.cs
+    @Html.ListBox("SelectedRoles", Model.Roles, new { style = "width: 100px;" }) // comes from AdminUserViewModels.cs
 }
 
 <div style="margin-top: 40px">

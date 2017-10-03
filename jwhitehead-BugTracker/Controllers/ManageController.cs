@@ -61,6 +61,7 @@ namespace jwhitehead_BugTracker.Controllers
                 : message == ManageMessageId.Error ? "An error has occurred."
                 : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
+                : message == ManageMessageId.ChangeNameSuccess ? "Your name has been changed."
                 : "";
 
             var userId = User.Identity.GetUserId();
@@ -322,6 +323,39 @@ namespace jwhitehead_BugTracker.Controllers
             return result.Succeeded ? RedirectToAction("ManageLogins") : RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
         }
 
+        // GET: /Manage/ChangeName
+        public ActionResult ChangeName()
+        {
+            var user = UserManager.FindById(User.Identity.GetUserId());
+            ChangeNameViewModel model = new ChangeNameViewModel();
+            model.NewName = user.FirstName;
+            return View(model);
+        }
+        // POST: /Manage/ChangeName
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangeName(ChangeNameViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            user.FirstName = model.NewName;
+            var result = await UserManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                if (user != null)
+                {
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+
+                }
+                return RedirectToAction("Index", new { Message = ManageMessageId.ChangeNameSuccess });
+            }
+            AddErrors(result);
+            return View(model);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && _userManager != null)
@@ -381,7 +415,8 @@ namespace jwhitehead_BugTracker.Controllers
             SetPasswordSuccess,
             RemoveLoginSuccess,
             RemovePhoneSuccess,
-            Error
+            Error,
+            ChangeNameSuccess
         }
 
 #endregion

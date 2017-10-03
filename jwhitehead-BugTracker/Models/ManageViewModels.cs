@@ -58,6 +58,13 @@ namespace jwhitehead_BugTracker.Models
         public string ConfirmPassword { get; set; }
     }
 
+    public class ChangeNameViewModel
+    {
+        [Required]
+        [Display(Name = "New Name")]
+        public string NewName { get; set; }
+    }
+
     public class AddPhoneNumberViewModel
     {
         [Required]

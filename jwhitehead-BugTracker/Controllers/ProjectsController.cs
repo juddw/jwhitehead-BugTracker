@@ -8,19 +8,53 @@ using System.Web;
 using System.Web.Mvc;
 using jwhitehead_BugTracker.Models;
 using jwhitehead_BugTracker.Models.CodeFirst;
+using jwhitehead_BugTracker.Models.Helpers;
+using Microsoft.AspNet.Identity;
 
 namespace jwhitehead_BugTracker.Controllers
 {
     public class ProjectsController : Universal
     {
-
         // GET: Projects
+        private ProjectAssignHelper helper = new ProjectAssignHelper();
+
+        [Authorize]
         public ActionResult Index()
+        {
+            if (Request.IsAuthenticated)
+            {
+                var userId = User.Identity.GetUserId();
+                var userProjects = helper.ListUserProjects(userId);
+                return View(userProjects); //PagedList??
+            }
+            else
+            {
+                return View();
+            }
+        }
+
+        [Authorize(Roles = "Admin, Project Manager")]
+        public ActionResult ShowAllIndex()
         {
             return View(db.Projects.ToList());
         }
 
+        // GET all projects if Admin or ProjectManager
+        [Authorize]
+        public ActionResult ProjectAdmin()
+        {
+            if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+            {
+                return View(db.Projects.ToList());
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+        }
+
         // GET: Projects/Details/5
+        [Authorize]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -32,10 +66,17 @@ namespace jwhitehead_BugTracker.Controllers
             {
                 return HttpNotFound();
             }
-            return View(project);
+            var user = db.Users.Find(User.Identity.GetUserId());
+            ProjectAssignHelper helper = new ProjectAssignHelper();
+            if (helper.IsUserOnProject(user.Id, project.Id))
+            {
+              return View(project);
+            }
+            return RedirectToAction("Index");
         }
 
         // GET: Projects/Create
+        [Authorize(Roles = "Admin, Project Manager")]
         public ActionResult Create()
         {
             return View();
@@ -45,11 +86,15 @@ namespace jwhitehead_BugTracker.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Roles = "Admin, Project Manager")]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Created,Updated,Title,Description,AuthorId")] Project project)
         {
             if (ModelState.IsValid)
             {
+                project.Created = DateTimeOffset.Now;
+                project.AuthorId = User.Identity.GetUserId();
+
                 db.Projects.Add(project);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -59,6 +104,7 @@ namespace jwhitehead_BugTracker.Controllers
         }
 
         // GET: Projects/Edit/5
+        [Authorize(Roles = "Admin, Project Manager")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -78,6 +124,7 @@ namespace jwhitehead_BugTracker.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Project Manager")]
         public ActionResult Edit([Bind(Include = "Id,Created,Updated,Title,Description,AuthorId")] Project project)
         {
             if (ModelState.IsValid)
@@ -90,6 +137,7 @@ namespace jwhitehead_BugTracker.Controllers
         }
 
         // GET: Projects/Delete/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -105,6 +153,7 @@ namespace jwhitehead_BugTracker.Controllers
         }
 
         // POST: Projects/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
@@ -112,6 +161,40 @@ namespace jwhitehead_BugTracker.Controllers
             Project project = db.Projects.Find(id);
             db.Projects.Remove(project);
             db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+
+        // GET: Projects
+        [Authorize(Roles = "Admin, Project Manager")]
+        public ActionResult ProjectUser(int id)
+        {
+            var project = db.Projects.Find(id);
+            ProjectUserViewModel projectuserVM = new ProjectUserViewModel();
+            projectuserVM.AssignProject = project;
+            projectuserVM.AssignProjectId = id; // where is the AssignProject assigned
+            projectuserVM.SelectedUsers = project.Users.Select(u => u.Id).ToArray();
+            // can call fullname if prefer.
+            projectuserVM.Users = new MultiSelectList(db.Users.ToList(), "Id", "FirstName", projectuserVM.SelectedUsers);
+            return View(projectuserVM);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin, Project Manager")]
+        [ValidateAntiForgeryToken]
+        public ActionResult ProjectUser(ProjectUserViewModel model)
+        {
+            ProjectAssignHelper helper = new ProjectAssignHelper();
+ 
+            // remove people assigned first, then add the people selected.
+            foreach(var userId in db.Users.Select(r => r.Id).ToList())
+            {
+                helper.RemoveUserFromProject(userId, model.AssignProjectId);
+            }
+            foreach (var userId in model.SelectedUsers)
+            {
+                helper.AddUserToProject(userId, model.AssignProjectId);
+            }
             return RedirectToAction("Index");
         }
 
