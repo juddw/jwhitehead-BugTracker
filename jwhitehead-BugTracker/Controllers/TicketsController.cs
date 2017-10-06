@@ -10,6 +10,7 @@ using jwhitehead_BugTracker.Models;
 using jwhitehead_BugTracker.Models.CodeFirst;
 using Microsoft.AspNet.Identity;
 using System.IO;
+using jwhitehead_BugTracker.Models.Helpers;
 
 namespace jwhitehead_BugTracker.Controllers
 {
@@ -194,7 +195,13 @@ namespace jwhitehead_BugTracker.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.AssignToUserId = new SelectList(db.Users, "Id", "FirstName", ticket.AssignToUserId);
+
+            UserRoleHelper userRoleHelper = new UserRoleHelper();
+
+            var developers = userRoleHelper.UsersInRole("Developer");
+            var devsOnProj = developers.Where(d => d.Projects.Any(p => p.Id == ticket.ProjectId));
+
+            ViewBag.AssignToUserId = new SelectList(devsOnProj, "Id", "FirstName", ticket.AssignToUserId);
             ViewBag.OwnerUserId = new SelectList(db.Users, "Id", "FirstName", ticket.OwnerUserId);
             ViewBag.ProjectId = new SelectList(db.Projects, "Id", "Title", ticket.ProjectId);
             ViewBag.TicketPriorityId = new SelectList(db.TicketPriorities, "Id", "Name", ticket.TicketPriorityId);
