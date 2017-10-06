@@ -15,10 +15,28 @@
     </h4>
     <hr />
     @Html.HiddenFor(model => model.User.Id)
-    @Html.ListBox("SelectedRoles", Model.Roles, new { style = "width: 100px;" }) // comes from AdminUserViewModels.cs
+    // added with Ryan - multi-select roles switch box
+    @Html.ListBox("SelectedRoles", Model.Roles, new { @class = "multi-select" }) // comes from AdminUserViewModels.cs
 }
 
 <div style="margin-top: 40px">
     @Html.ActionLink("Back to Admin Index", "Index")
 </div>
 
+@*added with Ryan - multi-select roles switch box*@
+@section Scripts {
+    <script src="~/Horizontal/assets/multi-select/multiselect.js"></script>
+    <script type="text/javascript">
+        /* Multiselect inputs */
+        $(function () {
+            "use strict";
+            $('.multi-select').multiSelect({
+                selectableHeader: "<div style='text-align: center; background-color: black; color: white'><strong>Available Roles</strong></div>",
+                selectionHeader: "<div style='text-align: center; background-color: black; color: white'><strong>User Roles</strong></div>"
+            });
+
+            //$(".ms-container").append('<i class="glyph-icon icon-exchange"></i>');
+            $(".ms-container").append('<i class="material-icons" style="font-size:50px; text-align:center; margin:80px 0px 0px 20px">swap_horiz</i>');
+        });
+    </script>
+}

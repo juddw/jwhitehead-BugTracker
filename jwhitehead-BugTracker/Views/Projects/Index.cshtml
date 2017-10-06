@@ -4,7 +4,10 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Projects Listing</h2>
+
+<h2>Project Listing for @ViewBag.FullName</h2>
+
+
 
 <p>
     @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
@@ -16,64 +19,91 @@
         <br />
     }
 </p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Created)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Title)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Description)
-        </th>
-        <th>
-            Assigned
-        </th>
-        <th>
-            Role
-        </th>
-        <th>Action</th>
-    </tr>
 
-    @foreach (var item in Model)
-    {
+<table id="myTable" class="table">
+
+    <thead>
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Created)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @foreach (var user in item.Users)
-                {
-                    @user.FullName <br />
-                }
-            </td>
-            <td></td>
-            <td style="display: block;">
-                @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
-                {
-                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { style = "display: block;" })
-                }
-
-                @if (User.IsInRole("Admin"))
-                {
-                    @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { style = "display: block;" })
-                }
-
-                @Html.ActionLink("Details", "Details", new { id = item.Id }, new { style = "display: block;" })
-
-                @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
-                {
-                    @Html.ActionLink("Assign", "ProjectUser", new { id = item.Id }, new { style = "display: block;" })
-                }
-            </td>
+            <th>
+                @Html.DisplayNameFor(model => model.Created)
+            </th>
+            <th>
+                Project Name
+                @*@Html.DisplayNameFor(model => model.Title)*@
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                Assigned
+            </th>
+            <th>
+                Role
+            </th>
+            <th>Action</th>
         </tr>
-    }
+    </thead>
 
-</table>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @*@Html.DisplayFor(modelItem => item.Created)*@
+                    @Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM-dd-yyyy hh:mm:ss")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @foreach (var user in item.Users)
+                {
+                        @user.FullName <br />
+                    }
+                </td>
+                <td>
+                    @*Not working*@
+                    @*@foreach (var role in item.Users)
+                        {
+                            <p>@role.</p>
+                        }*@
+                </td>
+                <td>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
+                {
+                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { style = "display: block;" })
+                    }
+
+                    @if (User.IsInRole("Admin"))
+                {
+                        @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { style = "display: block;" })
+                    }
+
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }, new { style = "display: block;" })
+
+                    @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
+                {
+                        @Html.ActionLink("Assign", "ProjectUser", new { id = item.Id }, new { style = "display: block;" })
+                    }
+
+                    @if (User.IsInRole("Submitter"))
+                {
+                        @Html.ActionLink("Create Ticket", "Create", "Tickets", new { id = item.Id }, new { style = "display: block;" })
+                    }
+                </td>
+            </tr>
+
+        }
+    </tbody>
+
+    </table>
+
+    @section scripts {
+        <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+        <script>
+            $("#myTable").DataTable();
+        </script>
+    }

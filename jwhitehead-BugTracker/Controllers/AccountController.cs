@@ -139,6 +139,9 @@ namespace jwhitehead_BugTracker.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
+            var timezones = TimeZoneInfo.GetSystemTimeZones(); /*jw 10/5/17*/
+            var defaulttimezone = TimeZoneInfo.FindSystemTimeZoneById("US Eastern Standard Time");
+            ViewBag.TimeZone = new SelectList(timezones, "Id", "Id", defaulttimezone); /*jw 10/5/17*/
             return View();
         }
 
@@ -151,7 +154,7 @@ namespace jwhitehead_BugTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName };
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, TimeZone = model.TimeZone };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

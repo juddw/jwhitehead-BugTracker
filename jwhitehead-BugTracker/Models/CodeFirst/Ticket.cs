@@ -19,9 +19,9 @@ namespace jwhitehead_BugTracker.Models.CodeFirst
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTimeOffset Created { get; set; }
-        public DateTimeOffset? Updated { get; set; }
+        public DateTimeOffset? Updated { get; set; } // not sure why the ?
         public int ProjectId { get; set; }
-        public int TicketTypedId { get; set; }
+        public int TicketTypeId { get; set; }
         public int TicketPriorityId { get; set; }
         public int TicketStatusId { get; set; }
         public string OwnerUserId { get; set; }

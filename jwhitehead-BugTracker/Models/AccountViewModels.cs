@@ -77,6 +77,11 @@ namespace jwhitehead_BugTracker.Models
         [Display(Name = "Email")]
         public string Email { get; set; }
 
+        // jw 10/5/17
+        [Required]
+        [Display(Name = "Time Zone")]
+        public string TimeZone { get; set; }
+
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]

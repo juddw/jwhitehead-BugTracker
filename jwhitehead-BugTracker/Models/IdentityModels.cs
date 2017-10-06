@@ -15,6 +15,7 @@ namespace jwhitehead_BugTracker.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string ProfilePic { get; set; }  // this is optional
+        public string TimeZone { get; set; }  // when you add, update database! jw 10/5/17
 
         public string FullName
         {

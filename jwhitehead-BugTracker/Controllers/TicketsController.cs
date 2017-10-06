@@ -8,6 +8,8 @@ using System.Web;
 using System.Web.Mvc;
 using jwhitehead_BugTracker.Models;
 using jwhitehead_BugTracker.Models.CodeFirst;
+using Microsoft.AspNet.Identity;
+using System.IO;
 
 namespace jwhitehead_BugTracker.Controllers
 {
@@ -15,15 +17,39 @@ namespace jwhitehead_BugTracker.Controllers
     {
 
         // GET: Tickets
+        [Authorize]
         public ActionResult Index()
         {
+            var user = db.Users.Find(User.Identity.GetUserId());
             var tickets = db.Tickets.Include(t => t.AssignToUser).Include(t => t.OwnerUser).Include(t => t.Project).Include(t => t.TicketPriority).Include(t => t.TicketStatus);
-            return View(tickets.ToList());
+            List<Ticket> Tickets = new List<Ticket>();
+            ViewBag.UserTimeZone = db.Users.Find(User.Identity.GetUserId()).TimeZone;
+            if (User.IsInRole("Admin"))
+            {
+                return View(db.Tickets.ToList());
+            }
+            else if (User.IsInRole("Project Manager"))
+            {
+                return View(db.Tickets.Where(t => t.Project.Users.Any(u => u.Id == user.Id)).ToList());
+                //tickets = db.Tickets.Include(t => t.AssignToUser).Include(p => p.Project);
+            }
+            else if (User.IsInRole("Developer"))
+            {
+                return View(db.Tickets.Where(t => t.AssignToUserId == user.Id).ToList());
+            }
+            else if (User.IsInRole("Submitter"))
+            {
+                return View(db.Tickets.Where(t => t.OwnerUserId == user.Id).ToList());
+            }
+
+            return View("NotAuthNoTickets");
         }
 
         // GET: Tickets/Details/5
+        [Authorize]
         public ActionResult Details(int? id)
         {
+            var user = db.Users.Find(User.Identity.GetUserId());
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -33,17 +59,41 @@ namespace jwhitehead_BugTracker.Controllers
             {
                 return HttpNotFound();
             }
+            if (User.IsInRole("Admin"))
+            {
+                return View(ticket);
+            }
+            else if (User.IsInRole("Project Manager") && !ticket.Project.Users.Any(u => u.Id == user.Id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            else if (User.IsInRole("Developer") && ticket.AssignToUserId != user.Id)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            else if (User.IsInRole("Submitter") && ticket.OwnerUserId != user.Id)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            else if (user.Roles.Count == 0)
+            {
+                return View("NotAuthNoTickets");
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             return View(ticket);
         }
 
+
+        [Authorize(Roles = "Submitter")]
         // GET: Tickets/Create
         public ActionResult Create()
         {
-            ViewBag.AssignToUserId = new SelectList(db.Users, "Id", "FirstName");
-            ViewBag.OwnerUserId = new SelectList(db.Users, "Id", "FirstName");
-            ViewBag.ProjectId = new SelectList(db.Projects, "Id", "Title");
+            var user = db.Users.Find(User.Identity.GetUserId());
+
+            ViewBag.ProjectId = new SelectList(db.Projects.Where(p => p.Users.Any(u => u.Id == user.Id)), "Id", "Title");
             ViewBag.TicketPriorityId = new SelectList(db.TicketPriorities, "Id", "Name");
             ViewBag.TicketStatusId = new SelectList(db.TicketStatuses, "Id", "Name");
+            ViewBag.TicketTypeId = new SelectList(db.TicketTypes, "Id", "Name");
             return View();
         }
 
@@ -51,25 +101,88 @@ namespace jwhitehead_BugTracker.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Title,Description,Created,Updated,ProjectId,TicketTypedId,TicketPriorityId,TicketStatusId,OwnerUserId,AssignToUserId")] Ticket ticket)
+        public ActionResult Create([Bind(Include = "Id,Title,Description,Created,Updated,ProjectId,TicketTypeId,TicketPriorityId")] Ticket ticket)
         {
+            var user = db.Users.Find(User.Identity.GetUserId());
+
             if (ModelState.IsValid)
             {
+                ticket.OwnerUserId = user.Id;
+                ticket.TicketStatusId = 1;
+                ticket.Created = DateTimeOffset.UtcNow; // added in View/Web.config and CustomHelpers.cs
+                ticket.Updated = DateTimeOffset.UtcNow; // added in View/Web.config and CustomHelpers.cs
                 db.Tickets.Add(ticket);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.AssignToUserId = new SelectList(db.Users, "Id", "FirstName", ticket.AssignToUserId);
-            ViewBag.OwnerUserId = new SelectList(db.Users, "Id", "FirstName", ticket.OwnerUserId);
-            ViewBag.ProjectId = new SelectList(db.Projects, "Id", "Title", ticket.ProjectId);
+            // catch all - repopulates fields with selected info before error.
+            ViewBag.ProjectId = new SelectList(db.Projects.Where(p => p.Users.Any(u => u.Id == user.Id)), "Id", "Title");
             ViewBag.TicketPriorityId = new SelectList(db.TicketPriorities, "Id", "Name", ticket.TicketPriorityId);
             ViewBag.TicketStatusId = new SelectList(db.TicketStatuses, "Id", "Name", ticket.TicketStatusId);
+            ViewBag.TicketTypeId = new SelectList(db.TicketTypes, "Id", "Name", ticket.TicketTypeId);
             return View(ticket);
         }
 
+
+        // POST: Items/Create
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        // Bind ensures the values are all entered
+        public ActionResult CreateAttachment([Bind(Include = "Id,TicketId,Description")] TicketAttachment item, HttpPostedFileBase image)
+        {
+            // Validation.
+            if (image != null && image.ContentLength > 0) // checking to make sure there is a file, and that the file has more than 0 bytes of information.
+            {
+                var ext = Path.GetExtension(image.FileName).ToLower();
+                if (ext != ".png" && ext != ".jpg" && ext != ".jpeg" && ext != ".gif" && ext != ".bmp" && ext != ".txt" && ext != ".doc" && ext != ".rtf" && ext != ".pdf" && ext != ".ppt" && ext != ".pptx" && ext != ".xlsx" && ext != ".xls")
+                    ModelState.AddModelError("image", "Invalid Format."); // Don't need curly braces with only one line of code.
+            }
+
+            if (ModelState.IsValid)
+            {
+                var filePath = "/Uploads/"; // url path
+                var absPath = Server.MapPath("~" + filePath);  // physical file path
+                item.FileUrl = filePath + image.FileName; // path of the file
+                image.SaveAs(Path.Combine(absPath, image.FileName)); // saves
+                item.Created = System.DateTime.Now;
+                db.TicketAttachments.Add(item);
+                db.SaveChanges();
+                return RedirectToAction("Details");
+            }
+
+            return View(item);
+        }
+
+        //// POST: Tickets/Create
+        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        //// more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Create([Bind(Include = "Id,Title,Description,Created,Updated,ProjectId,TicketTypeId,TicketPriorityId,TicketStatusId,OwnerUserId,AssignToUserId")] Ticket ticket)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        db.Tickets.Add(ticket);
+        //        db.SaveChanges();
+        //        return RedirectToAction("Index");
+        //    }
+
+        //    ViewBag.AssignToUserId = new SelectList(db.Users, "Id", "FirstName", ticket.AssignToUserId);
+        //    ViewBag.OwnerUserId = new SelectList(db.Users, "Id", "FirstName", ticket.OwnerUserId);
+        //    ViewBag.ProjectId = new SelectList(db.Projects, "Id", "Title", ticket.ProjectId);
+        //    ViewBag.TicketPriorityId = new SelectList(db.TicketPriorities, "Id", "Name", ticket.TicketPriorityId);
+        //    ViewBag.TicketStatusId = new SelectList(db.TicketStatuses, "Id", "Name", ticket.TicketStatusId);
+        //    return View(ticket);
+        //}
+
         // GET: Tickets/Edit/5
+        [Authorize]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -86,6 +199,7 @@ namespace jwhitehead_BugTracker.Controllers
             ViewBag.ProjectId = new SelectList(db.Projects, "Id", "Title", ticket.ProjectId);
             ViewBag.TicketPriorityId = new SelectList(db.TicketPriorities, "Id", "Name", ticket.TicketPriorityId);
             ViewBag.TicketStatusId = new SelectList(db.TicketStatuses, "Id", "Name", ticket.TicketStatusId);
+            ViewBag.TicketTypeId = new SelectList(db.TicketTypes, "Id", "Name", ticket.TicketTypeId);
             return View(ticket);
         }
 
@@ -93,8 +207,9 @@ namespace jwhitehead_BugTracker.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Title,Description,Created,Updated,ProjectId,TicketTypedId,TicketPriorityId,TicketStatusId,OwnerUserId,AssignToUserId")] Ticket ticket)
+        public ActionResult Edit([Bind(Include = "Id,Title,Description,Created,Updated,ProjectId,TicketTypeId,TicketPriorityId,TicketStatusId,OwnerUserId,AssignToUserId")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
@@ -107,10 +222,12 @@ namespace jwhitehead_BugTracker.Controllers
             ViewBag.ProjectId = new SelectList(db.Projects, "Id", "Title", ticket.ProjectId);
             ViewBag.TicketPriorityId = new SelectList(db.TicketPriorities, "Id", "Name", ticket.TicketPriorityId);
             ViewBag.TicketStatusId = new SelectList(db.TicketStatuses, "Id", "Name", ticket.TicketStatusId);
+            ViewBag.TicketTypeId = new SelectList(db.TicketTypes, "Id", "Name", ticket.TicketTypeId);
             return View(ticket);
         }
 
         // GET: Tickets/Delete/5
+        [Authorize]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -125,16 +242,17 @@ namespace jwhitehead_BugTracker.Controllers
             return View(ticket);
         }
 
-        // POST: Tickets/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Ticket ticket = db.Tickets.Find(id);
-            db.Tickets.Remove(ticket);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
+        //// POST: Tickets/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[Authorize]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult DeleteConfirmed(int id)
+        //{
+        //    Ticket ticket = db.Tickets.Find(id);
+        //    db.Tickets.Remove(ticket);
+        //    db.SaveChanges();
+        //    return RedirectToAction("Index");
+        //}
 
         protected override void Dispose(bool disposing)
         {

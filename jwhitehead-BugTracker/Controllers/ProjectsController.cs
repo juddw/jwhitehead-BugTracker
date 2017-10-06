@@ -23,27 +23,32 @@ namespace jwhitehead_BugTracker.Controllers
         {
             if (Request.IsAuthenticated)
             {
+                ViewBag.UserTimeZone = db.Users.Find(User.Identity.GetUserId()).TimeZone;
                 var userId = User.Identity.GetUserId();
                 var userProjects = helper.ListUserProjects(userId);
                 return View(userProjects); //PagedList??
             }
             else
             {
+                ViewBag.UserTimeZone = db.Users.Find(User.Identity.GetUserId()).TimeZone;
                 return View();
             }
         }
 
         [Authorize(Roles = "Admin, Project Manager")]
         public ActionResult ShowAllIndex()
+
+
         {
+            ViewBag.UserTimeZone = db.Users.Find(User.Identity.GetUserId()).TimeZone;
             return View(db.Projects.ToList());
         }
 
-        // GET all projects if Admin or ProjectManager
+        // GET all projects if Admin or Project Manager
         [Authorize]
         public ActionResult ProjectAdmin()
         {
-            if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+            if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
             {
                 return View(db.Projects.ToList());
             }
@@ -68,9 +73,9 @@ namespace jwhitehead_BugTracker.Controllers
             }
             var user = db.Users.Find(User.Identity.GetUserId());
             ProjectAssignHelper helper = new ProjectAssignHelper();
-            if (helper.IsUserOnProject(user.Id, project.Id))
+            if (helper.IsUserOnProject(user.Id, project.Id) || User.IsInRole("Admin"))
             {
-              return View(project);
+                return View(project);
             }
             return RedirectToAction("Index");
         }
@@ -92,7 +97,7 @@ namespace jwhitehead_BugTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                project.Created = DateTimeOffset.Now;
+                project.Created = DateTimeOffset.UtcNow; // added in View/Web.config and CustomHelpers.cs
                 project.AuthorId = User.Identity.GetUserId();
 
                 db.Projects.Add(project);
@@ -185,9 +190,9 @@ namespace jwhitehead_BugTracker.Controllers
         public ActionResult ProjectUser(ProjectUserViewModel model)
         {
             ProjectAssignHelper helper = new ProjectAssignHelper();
- 
+
             // remove people assigned first, then add the people selected.
-            foreach(var userId in db.Users.Select(r => r.Id).ToList())
+            foreach (var userId in db.Users.Select(r => r.Id).ToList())
             {
                 helper.RemoveUserFromProject(userId, model.AssignProjectId);
             }
