@@ -1,0 +1,139 @@
+﻿@model jwhitehead_BugTracker.Models.CodeFirst.Ticket
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Ticket</h4>
+    <hr />
+    <dl class="dl-horizontal">
+
+        <dt>
+            Assigned To
+            @*@Html.DisplayNameFor(model => model.AssignToUser.FirstName)*@
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AssignToUser.FullName)
+        </dd>
+
+        <dt>
+            Created By
+            @*@Html.DisplayNameFor(model => model.OwnerUser.FirstName)*@
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OwnerUser.FirstName)
+        </dd>
+
+        <dt>
+            Project Name
+            @*@Html.DisplayNameFor(model => model.Project.Title)*@
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Project.Title)
+        </dd>
+
+        <dt>
+            Priority
+            @*@Html.DisplayNameFor(model => model.TicketPriority.Name)*@
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TicketPriority.Name)
+        </dd>
+
+        <dt>
+            Ticket Status
+            @*@Html.DisplayNameFor(model => model.TicketStatus.Name)*@
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TicketStatus.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Created)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Created)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Updated)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Updated)
+        </dd>
+
+        <dt>
+            Ticket Type
+            @*@Html.DisplayNameFor(model => model.TicketTypeId)*@
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TicketType.Name)
+        </dd>
+    </dl>
+</div>
+
+@*@using (Html.BeginForm())*@
+@using (Html.BeginForm("CreateAttachment", "Tickets", FormMethod.Post, new { enctype = "Multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @*Image Upload*@
+    <input name="TicketId" value="@Model.Id" hidden />
+    <div class="form-group">
+        <label class="control-label col-md-2">Upload Image</label>
+        <div class="col-md-10">
+            <input name="image" type="file" class="form-control" /> @*name image should be the same as....*@
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2">Description</label>
+        <div class="col-md-10">
+            <input name="Description" type="text" class="form-control" /> @*name image should be the same as....*@
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Upload" class="btn btn-primary" style="margin-top: 10px;" />
+        </div>
+    </div>
+}
+
+<p style="margin-bottom: 30px;">
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+<h3>Attachments</h3>
+
+@foreach (var attachment in Model.Attachments)
+{
+    <a href="@attachment.FileUrl" target="_blank">@attachment.FileUrl</a><br />
+}

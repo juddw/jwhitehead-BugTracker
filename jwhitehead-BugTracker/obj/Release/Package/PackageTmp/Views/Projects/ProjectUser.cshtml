@@ -1,0 +1,34 @@
+﻿@model jwhitehead_BugTracker.Models.Helpers.ProjectUserViewModel
+@{
+    ViewBag.Title = "ProjectUser";
+}
+
+<h2>Assign Users to Project</h2>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.AssignProjectId)
+
+    <h3>Project Name : @Model.AssignProject.Title</h3>
+
+    @Html.ListBox("SelectedUsers", Model.Users, new { @class = "multi-select" })
+    <button type="submit" style="display: block; margin-top: 10px;">Submit</button>
+}
+
+@*added with Ryan - multi-select roles switch box*@
+@section Scripts {
+    <script src="~/Horizontal/assets/multi-select/multiselect.js"></script>
+    <script type="text/javascript">
+        /* Multiselect inputs */
+        $(function () {
+            "use strict";
+            $('.multi-select').multiSelect({
+                selectableHeader: "<div style='text-align: center; background-color: black; color: white'><strong>Available Users</strong></div>",
+                selectionHeader: "<div style='text-align: center; background-color: black; color: white'><strong>Users</strong></div>"
+            });
+
+            //$(".ms-container").append('<i class="glyph-icon icon-exchange"></i>');
+            $(".ms-container").append('<i class="material-icons" style="font-size:50px; text-align:center; margin:80px 0px 0px 20px">swap_horiz</i>');
+        });
+    </script>
+}

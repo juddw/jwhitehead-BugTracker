@@ -1,0 +1,20 @@
+﻿@model jwhitehead_BugTracker.Models.CodeFirst.Ticket
+
+@{
+    ViewBag.Title = "Not Authorized to View Tickets";
+}
+
+@*<h2>Delete</h2>*@
+
+<br />
+<br />
+<div>
+    <h4>Welcome @ViewBag.FullName. Unfortunately, only authorized users can view tickets.</h4>
+    <hr />
+    <dl class="dl-horizontal">
+
+    </dl>
+
+
+   @Html.ActionLink("Home", "Index", "Home")
+</div>

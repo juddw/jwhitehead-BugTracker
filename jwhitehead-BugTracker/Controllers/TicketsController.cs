@@ -160,6 +160,29 @@ namespace jwhitehead_BugTracker.Controllers
             return View(item);
         }
 
+        // added with Mark
+        public ActionResult CreateComments([Bind(Include = "Id,Body,TicketId")] TicketComment comment)
+        {
+            var userId = User.Identity.GetUserId();
+
+            if (ModelState.IsValid)
+            {
+                if (!String.IsNullOrWhiteSpace(userId))
+                {
+                    comment.Created = DateTime.Now;
+                    comment.AuthorId = User.Identity.GetUserId();
+                    db.TicketComments.Add(comment);
+                    db.SaveChanges();
+
+                    var post = db.Tickets.Find(comment.TicketId);
+                    return RedirectToAction("Details", new { comment.TicketId });
+                    //return RedirectToAction("Details", new { Slug = post.Slug });
+                }
+            }
+            return RedirectToAction("Index");
+        }
+
+
         //// POST: Tickets/Create
         //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         //// more details see https://go.microsoft.com/fwlink/?LinkId=317598.
