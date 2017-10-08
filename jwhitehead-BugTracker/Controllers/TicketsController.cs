@@ -157,7 +157,7 @@ namespace jwhitehead_BugTracker.Controllers
                 item.Created = System.DateTime.Now;
                 db.TicketAttachments.Add(item);
                 db.SaveChanges();
-                return RedirectToAction("Details");
+                return RedirectToAction("Details", new { id = item.TicketId});
             }
 
             return View(item);
