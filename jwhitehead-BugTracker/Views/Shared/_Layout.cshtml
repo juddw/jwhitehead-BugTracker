@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - My ASP.NET Application</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link href="~/Horizontal/assets/multi-select/multiselect.css" rel="stylesheet" /> @*added with Ryan - multi-select roles switch box*@
+    <link href="~/assets/multi-select/multiselect.css" rel="stylesheet" /> @*added with Ryan - multi-select roles switch box*@
     <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" /> 
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
@@ -24,12 +24,12 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("Projects", "Index", "Projects")</li>
+                    @*<li>@Html.ActionLink("Home", "Index", "Home")</li>*@
+                    <li>@Html.ActionLink("Assigned Projects", "Index", "Projects", null, new { style="margin-left: 50px;"})</li>
                     <li>@Html.ActionLink("All Projects", "ShowAllIndex", "Projects")</li>
                     <li>@Html.ActionLink("Tickets", "Index", "Tickets")</li>
                     <li>@Html.ActionLink("Edit Roles", "Index", "Admin")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    @*<li>@Html.ActionLink("About", "About", "Home")</li>*@
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                 </ul>
                 @Html.Partial("_LoginPartial")

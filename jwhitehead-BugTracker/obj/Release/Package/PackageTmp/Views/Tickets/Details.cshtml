@@ -137,3 +137,42 @@
 {
     <a href="@attachment.FileUrl" target="_blank">@attachment.FileUrl</a><br />
 }
+
+<hr style="border-color: #808080;" />
+
+
+@*added with Mark*@
+@using (Html.BeginForm("CreateComments", "Tickets")) // way to grab data and send to backend.
+{
+    @Html.AntiForgeryToken()
+    <h3>Comments</h3>
+    if (Request.IsAuthenticated)
+    {
+        <input type="number" name="TicketId" value="@Model.Id" hidden />
+        <input type="text" name="Body" rows="7" required style="width: 300px;" /> // user must enter something.
+        <input class="btn btn-primary" style="margin-top: 10px; margin-bottom: 40px; display: block;" type="submit" value="Submit" />
+    }
+    else
+    {
+        <p>Please log in to leave a comment.</p>
+    }
+    @*<hr style="border-color: #808080;" />*@
+}
+@*added with Mark*@
+@foreach (var comment in Model.Comments)
+{
+    if (comment != null && comment.AuthorId != null)
+    {
+        <p><span style="font-weight: 600">@comment.Body</span> - @comment.Author.FullName <br />@comment.Created</p>
+
+        <p style="margin: 0px 0px 0px 0px;">
+            @if (User.IsInRole("Admin"))
+            {
+                @Html.ActionLink("Edit", "Edit", "Comments", new { id = comment.Id }, new { @class = "editText" }) <span>|</span>
+                @Html.ActionLink("Delete", "Delete", "Comments", new { id = comment.Id }, new { @class = "editText" })
+            }
+        </p>
+
+        <hr style="border-color: #808080;" />
+    }
+}

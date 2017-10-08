@@ -107,6 +107,12 @@
                 </div>
             </div>
         }
+        else
+        {
+            // pass information to Controller if not in Admin or PM roles. Just pass the hidden field.
+            // without this, you will lose the AssignToUser info when you Save and the Ticket will drop from the Developer's list.
+            @Html.HiddenFor(model => model.AssignToUserId)
+        }
 
 
         <div class="form-group">

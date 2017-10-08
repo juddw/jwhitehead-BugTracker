@@ -66,15 +66,18 @@ namespace jwhitehead_BugTracker.Controllers
             }
             else if (User.IsInRole("Project Manager") && !ticket.Project.Users.Any(u => u.Id == user.Id))
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return View("NotAuthNoTickets");
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             else if (User.IsInRole("Developer") && ticket.AssignToUserId != user.Id)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return View("NotAuthNoTickets");
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             else if (User.IsInRole("Submitter") && ticket.OwnerUserId != user.Id)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return View("NotAuthNoTickets");
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             else if (user.Roles.Count == 0)
             {
@@ -169,14 +172,13 @@ namespace jwhitehead_BugTracker.Controllers
             {
                 if (!String.IsNullOrWhiteSpace(userId))
                 {
-                    comment.Created = DateTime.Now;
+                    comment.Created = DateTimeOffset.UtcNow; // added in View/Web.config and CustomHelpers.cs
                     comment.AuthorId = User.Identity.GetUserId();
                     db.TicketComments.Add(comment);
                     db.SaveChanges();
 
                     var post = db.Tickets.Find(comment.TicketId);
-                    return RedirectToAction("Details", new { comment.TicketId });
-                    //return RedirectToAction("Details", new { Slug = post.Slug });
+                    return RedirectToAction("Details", new { id = comment.TicketId});
                 }
             }
             return RedirectToAction("Index");

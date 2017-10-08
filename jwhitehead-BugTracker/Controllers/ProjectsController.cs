@@ -200,7 +200,7 @@ namespace jwhitehead_BugTracker.Controllers
             {
                 helper.AddUserToProject(userId, model.AssignProjectId);
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("ShowAllIndex");
         }
 
         protected override void Dispose(bool disposing)
