@@ -211,27 +211,51 @@ namespace jwhitehead_BugTracker.Controllers
         [Authorize]
         public ActionResult Edit(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            var user = db.Users.Find(User.Identity.GetUserId());
             Ticket ticket = db.Tickets.Find(id);
-            if (ticket == null)
-            {
-                return HttpNotFound();
-            }
-
             UserRoleHelper userRoleHelper = new UserRoleHelper();
 
             var developers = userRoleHelper.UsersInRole("Developer");
             var devsOnProj = developers.Where(d => d.Projects.Any(p => p.Id == ticket.ProjectId));
 
-            ViewBag.AssignToUserId = new SelectList(devsOnProj, "Id", "FirstName", ticket.AssignToUserId);
-            ViewBag.OwnerUserId = new SelectList(db.Users, "Id", "FirstName", ticket.OwnerUserId);
+            ViewBag.AssignToUserId = new SelectList(devsOnProj, "Id", "FullName", ticket.AssignToUserId);
+            ViewBag.OwnerUserId = new SelectList(userRoleHelper.UsersInRole("Submitter"), "Id", "FullName", ticket.OwnerUserId);
             ViewBag.ProjectId = new SelectList(db.Projects, "Id", "Title", ticket.ProjectId);
             ViewBag.TicketPriorityId = new SelectList(db.TicketPriorities, "Id", "Name", ticket.TicketPriorityId);
             ViewBag.TicketStatusId = new SelectList(db.TicketStatuses, "Id", "Name", ticket.TicketStatusId);
             ViewBag.TicketTypeId = new SelectList(db.TicketTypes, "Id", "Name", ticket.TicketTypeId);
+
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            if (ticket == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (User.IsInRole("Admin"))
+            {
+                return View(ticket);
+            }
+            else if (User.IsInRole("Project Manager") && !ticket.Project.Users.Any(u => u.Id == user.Id))
+            {
+                return View("NotAuthNoTickets");
+            }
+            else if (User.IsInRole("Developer") && ticket.AssignToUserId != user.Id)
+            {
+                return View("NotAuthNoTickets");
+            }
+            else if (User.IsInRole("Submitter") && ticket.OwnerUserId != user.Id)
+            {
+                return View("NotAuthNoTickets");
+            }
+            else if (user.Roles.Count == 0)
+            {
+                return View("NotAuthNoTickets");
+            }
+
             return View(ticket);
         }
 
@@ -241,10 +265,12 @@ namespace jwhitehead_BugTracker.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Title,Description,Created,Updated,ProjectId,TicketTypeId,TicketPriorityId,TicketStatusId,OwnerUserId,AssignToUserId")] Ticket ticket)
+        public ActionResult Edit([Bind(Include = "Id,Title,Description,Created,Updated,ProjectId,TicketTypeId,TicketPriorityId,TicketStatusId,OwnerUserId,AssignToUserId")] Ticket ticket, string AssignToUserId)
         {
             if (ModelState.IsValid)
             {
+                ticket.AssignToUserId = AssignToUserId;
+                ticket.TicketStatusId = db.TicketStatuses.FirstOrDefault(t => t.Name == "Assigned").Id; // change unassigned to assigned when assigning user to ticket.
                 db.Entry(ticket).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
