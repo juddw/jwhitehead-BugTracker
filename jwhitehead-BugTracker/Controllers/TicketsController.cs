@@ -273,7 +273,8 @@ namespace jwhitehead_BugTracker.Controllers
             {
                 // if ticket has a user and status is Unassigned, switch to assigned.
                 if (ticket.AssignToUserId != null && ticket.TicketStatusId == 1) // only set ticket.AssignToUserId if argument passed is a string. Doesn't like setting to null.
-                {
+                {                                                                // TicketStatusId is found in the Tickets Model and is a Foreign Key. Since it is named the same as the TicketStatus Model with Id added.
+                                                                                 // it points to the Primary Key TicketStatus.Id
                     ticket.TicketStatusId = db.TicketStatuses.FirstOrDefault(t => t.Name == "Assigned").Id; // change unassigned to assigned when assigning user to ticket.
                 }
 
