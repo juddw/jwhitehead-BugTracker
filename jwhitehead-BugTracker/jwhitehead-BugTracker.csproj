@@ -1914,7 +1914,7 @@
     <Content Include="Views\Projects\ProjectUser.cshtml" />
     <Content Include="Views\Manage\ChangeName.cshtml" />
     <Content Include="Views\Projects\ProjectAdmin.cshtml" />
-    <Content Include="Views\Projects\ShowAllIndex.cshtml" />
+    <Content Include="Views\Projects\AllProjectsIndex.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Index - Copy.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />

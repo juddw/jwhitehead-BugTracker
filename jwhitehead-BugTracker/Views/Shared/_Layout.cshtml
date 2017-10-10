@@ -28,7 +28,7 @@
                     <li>@Html.ActionLink("Assigned Projects", "Index", "Projects", null, new { style = "margin-left: 50px;" })</li>
                     @if (!User.IsInRole("Submitter"))
                     {
-                        <li>@Html.ActionLink("All Projects", "ShowAllIndex", "Projects")</li>
+                        <li>@Html.ActionLink("All Projects", "AllProjectsIndex", "Projects")</li>
                     }
                     <li>@Html.ActionLink("Tickets", "Index", "Tickets")</li>
                     @if (!User.IsInRole("Submitter"))
