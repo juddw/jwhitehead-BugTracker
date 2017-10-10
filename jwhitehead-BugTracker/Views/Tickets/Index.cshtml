@@ -18,7 +18,7 @@ else
 }
 
 <table id="myTable" class="table">
-    
+
     <thead>
         <tr>
             <th>
@@ -48,12 +48,12 @@ else
             <th>
                 @Html.DisplayNameFor(model => model.Description)
             </th>
-            <th>
+            @*<th>
                 @Html.DisplayNameFor(model => model.Created)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Updated)
-            </th>
+            </th>*@
             <th>
                 Ticket Type
                 @*@Html.DisplayNameFor(model => model.TicketType)*@
@@ -87,18 +87,16 @@ else
                 <td>
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
-                <td>
-                    @*@Html.DisplayFor(modelItem => item.Created)*@
-                    @Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM-dd-yyyy hh:mm:ss")
+               @*<td>
+                   @Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM-dd-yyyy hh:mm:ss")
                 </td>
                 <td>
-                    @*@Html.DisplayFor(modelItem => item.Updated)*@
                     @if (item.Updated != null)
-                {
+                    {
                         @Html.ToUserTime(item.Updated.Value, ViewBag.UserTimeZone as string, "MM-dd-yyyy hh:mm:ss")
                     }
-
-                </td>
+                </td>*@
+               
                 <td>
                     @Html.DisplayFor(modelItem => item.TicketType.Name)
                 </td>
@@ -116,6 +114,6 @@ else
 @section scripts {
     <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
     <script>
-            $("#myTable").DataTable();
+        $("#myTable").DataTable();
     </script>
 }

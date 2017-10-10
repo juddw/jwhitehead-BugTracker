@@ -77,7 +77,8 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Created)
+            @Html.ToUserTime(Model.Created, ViewBag.UserTimeZone as string, "MM-dd-yyyy hh:mm:ss")
+            @*@Html.DisplayFor(model => model.Created)*@
         </dd>
 
         <dt>
@@ -149,8 +150,10 @@
     if (Request.IsAuthenticated)
     {
         <input type="number" name="TicketId" value="@Model.Id" hidden />
-        <input type="text" name="Body" rows="7" required style="width: 300px;" /> // user must enter something.
+        <textarea rows="5" cols="100" name="Body" required ></textarea> // user must enter something.
+        @*<input type="text" name="Body" rows="7" required style="width: 300px;" /> // user must enter something.*@
         <input class="btn btn-primary" style="margin-top: 10px; margin-bottom: 40px; display: block;" type="submit" value="Submit" />
+
     }
     else
     {
@@ -174,5 +177,6 @@
         </p>
 
         <hr style="border-color: #808080;" />
+
     }
 }

@@ -157,7 +157,7 @@ namespace jwhitehead_BugTracker.Controllers
                 item.Created = System.DateTime.Now;
                 db.TicketAttachments.Add(item);
                 db.SaveChanges();
-                return RedirectToAction("Details", new { id = item.TicketId});
+                return RedirectToAction("Details", new { id = item.TicketId });
             }
 
             return View(item);
@@ -172,13 +172,14 @@ namespace jwhitehead_BugTracker.Controllers
             {
                 if (!String.IsNullOrWhiteSpace(userId))
                 {
+                    //ViewBag.UserTimeZone = db.Users.Find(User.Identity.GetUserId()).TimeZone;
                     comment.Created = DateTimeOffset.UtcNow; // added in View/Web.config and CustomHelpers.cs
                     comment.AuthorId = User.Identity.GetUserId();
                     db.TicketComments.Add(comment);
                     db.SaveChanges();
 
                     var post = db.Tickets.Find(comment.TicketId);
-                    return RedirectToAction("Details", new { id = comment.TicketId});
+                    return RedirectToAction("Details", new { id = comment.TicketId });
                 }
             }
             return RedirectToAction("Index");
@@ -219,11 +220,12 @@ namespace jwhitehead_BugTracker.Controllers
             var devsOnProj = developers.Where(d => d.Projects.Any(p => p.Id == ticket.ProjectId));
 
             ViewBag.AssignToUserId = new SelectList(devsOnProj, "Id", "FullName", ticket.AssignToUserId);
-            ViewBag.OwnerUserId = new SelectList(userRoleHelper.UsersInRole("Submitter"), "Id", "FullName", ticket.OwnerUserId);
+            ViewBag.OwnerUserId = new SelectList(userRoleHelper.UsersInRole("Submitter"), "Id", "FullName", ticket.OwnerUserId); // Set the list to only those in Submitter Role.
             ViewBag.ProjectId = new SelectList(db.Projects, "Id", "Title", ticket.ProjectId);
             ViewBag.TicketPriorityId = new SelectList(db.TicketPriorities, "Id", "Name", ticket.TicketPriorityId);
             ViewBag.TicketStatusId = new SelectList(db.TicketStatuses, "Id", "Name", ticket.TicketStatusId);
             ViewBag.TicketTypeId = new SelectList(db.TicketTypes, "Id", "Name", ticket.TicketTypeId);
+            ViewBag.UserTimeZone = db.Users.Find(User.Identity.GetUserId()).TimeZone;
 
             if (id == null)
             {
@@ -265,12 +267,16 @@ namespace jwhitehead_BugTracker.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Title,Description,Created,Updated,ProjectId,TicketTypeId,TicketPriorityId,TicketStatusId,OwnerUserId,AssignToUserId")] Ticket ticket, string AssignToUserId)
+        public ActionResult Edit([Bind(Include = "Id,Title,Description,Created,Updated,ProjectId,TicketTypeId,TicketPriorityId,TicketStatusId,OwnerUserId,AssignToUserId")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
-                ticket.AssignToUserId = AssignToUserId;
-                ticket.TicketStatusId = db.TicketStatuses.FirstOrDefault(t => t.Name == "Assigned").Id; // change unassigned to assigned when assigning user to ticket.
+                // if ticket has a user and status is Unassigned, switch to assigned.
+                if (ticket.AssignToUserId != null && ticket.TicketStatusId == 1) // only set ticket.AssignToUserId if argument passed is a string. Doesn't like setting to null.
+                {
+                    ticket.TicketStatusId = db.TicketStatuses.FirstOrDefault(t => t.Name == "Assigned").Id; // change unassigned to assigned when assigning user to ticket.
+                }
+
                 db.Entry(ticket).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
