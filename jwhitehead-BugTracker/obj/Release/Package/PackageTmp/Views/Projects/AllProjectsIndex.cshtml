@@ -4,10 +4,7 @@
     ViewBag.Title = "Index";
 }
 
-
-<h2>Assigned Projects for @ViewBag.FullName</h2>
-
-
+<h2>All Projects Listing</h2>
 
 <p>
     @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
@@ -21,7 +18,6 @@
 </p>
 
 <table id="datatable" class="table table-striped table-bordered">
-
     <thead>
         <tr>
             <th>
@@ -35,10 +31,7 @@
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                Assigned
-            </th>
-            <th>
-                Role
+                Assigned To
             </th>
             <th>Action</th>
         </tr>
@@ -49,8 +42,8 @@
         {
             <tr>
                 <td>
-                    @*@Html.DisplayFor(modelItem => item.Created)*@
                     @Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM-dd-yyyy hh:mm:ss")
+                    @*@Html.DisplayFor(modelItem => item.Created)*@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Title)
@@ -64,14 +57,8 @@
                         @user.FullName <br />
                     }
                 </td>
-                <td>
-                    @*Not working*@
-                    @*@foreach (var role in item.Users)
-                        {
-                            <p>@role.</p>
-                        }*@
-                </td>
-                <td>
+
+                <td style="display: block;">
                     @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
                 {
                         @Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { style = "display: block;" })
@@ -88,14 +75,8 @@
                 {
                         @Html.ActionLink("Assign", "ProjectUser", new { id = item.Id }, new { style = "display: block;" })
                     }
-
-                    @if (User.IsInRole("Submitter"))
-                {
-                        @Html.ActionLink("Create Ticket", "Create", "Tickets", new { id = item.Id }, new { style = "display: block;" })
-                    }
                 </td>
             </tr>
-
         }
     </tbody>
 

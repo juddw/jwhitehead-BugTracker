@@ -88,8 +88,9 @@ namespace jwhitehead_BugTracker.Controllers
         }
 
 
-        [Authorize(Roles = "Submitter")]
+
         // GET: Tickets/Create
+        [Authorize(Roles = "Submitter")] // this will only allow access to Submitter.
         public ActionResult Create()
         {
             var user = db.Users.Find(User.Identity.GetUserId());
@@ -105,20 +106,32 @@ namespace jwhitehead_BugTracker.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Submitter")]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Title,Description,Created,Updated,ProjectId,TicketTypeId,TicketPriorityId")] Ticket ticket)
         {
             var user = db.Users.Find(User.Identity.GetUserId());
+            TicketHistory ticketHistory = new TicketHistory();
 
             if (ModelState.IsValid)
             {
+                //Add ticket to project.
                 ticket.OwnerUserId = user.Id;
-                ticket.TicketStatusId = 1;
+                ticket.TicketStatusId = 1; // set to unassigned.
                 ticket.Created = DateTimeOffset.UtcNow; // added in View/Web.config and CustomHelpers.cs
                 ticket.Updated = DateTimeOffset.UtcNow; // added in View/Web.config and CustomHelpers.cs
                 db.Tickets.Add(ticket);
+
+                //Take snapshot of initial state of created ticket.
+                ticketHistory.AuthorId = User.Identity.GetUserId();
+                ticketHistory.Created = ticket.Created;
+                ticketHistory.TicketId = ticket.Id;
+                ticketHistory.Property = "TICKET CREATED";
+                db.TicketHistories.Add(ticketHistory);
+
                 db.SaveChanges();
+
+
                 return RedirectToAction("Index");
             }
 

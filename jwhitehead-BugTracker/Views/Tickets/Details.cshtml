@@ -77,8 +77,8 @@
         </dt>
 
         <dd>
-            @Html.ToUserTime(Model.Created, ViewBag.UserTimeZone as string, "MM-dd-yyyy hh:mm:ss")
-            @*@Html.DisplayFor(model => model.Created)*@
+            @*@Html.ToUserTime(Model.Created, ViewBag.UserTimeZone as string, "MM-dd-yyyy hh:mm:ss")*@
+            @Html.DisplayFor(model => model.Created)
         </dd>
 
         <dt>
@@ -100,6 +100,7 @@
     </dl>
 </div>
 
+@*ADDING ATTACHMENTS*@
 @*@using (Html.BeginForm())*@
 @using (Html.BeginForm("CreateAttachment", "Tickets", FormMethod.Post, new { enctype = "Multipart/form-data" }))
 {
@@ -118,7 +119,6 @@
             <input name="Description" type="text" class="form-control" /> @*name image should be the same as....*@
         </div>
     </div>
-
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
@@ -142,7 +142,7 @@
 <hr style="border-color: #808080;" />
 
 
-@*added with Mark*@
+@*ADDING COMMENTS with Mark*@
 @using (Html.BeginForm("CreateComments", "Tickets")) // way to grab data and send to backend.
 {
     @Html.AntiForgeryToken()
@@ -180,3 +180,20 @@
 
     }
 }
+
+
+<h3>Ticket History</h3>
+
+<hr style="border-color: #808080;" />
+
+@foreach (var history in Model.Histories)
+{
+    if (history != null && history.AuthorId != null)
+    {
+        <p><span style="font-weight: 600">@history.Property</span> - @history.Author.FullName <br />@history.Created</p>
+
+        <hr style="border-color: #808080;" />
+
+    }
+}
+
