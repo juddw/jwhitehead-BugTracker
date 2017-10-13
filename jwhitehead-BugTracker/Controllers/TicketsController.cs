@@ -168,7 +168,8 @@ namespace jwhitehead_BugTracker.Controllers
                 var absPath = Server.MapPath("~" + filePath);  // physical file path
                 item.FileUrl = filePath + image.FileName; // path of the file
                 image.SaveAs(Path.Combine(absPath, image.FileName)); // saves
-                item.Created = DateTime.Now;
+                item.Created = DateTimeOffset.UtcNow;
+                item.AuthorId = User.Identity.GetUserId();
                 db.TicketAttachments.Add(item);
 
                 //Add to Ticket Details Page History that Attachment was made.
@@ -253,11 +254,13 @@ namespace jwhitehead_BugTracker.Controllers
         public ActionResult CommentDeleteConfirmed(int id)
         {
             TicketComment comment = db.TicketComments.Find(id);
+            
+            ViewBag.UserTimeZone = db.Users.Find(User.Identity.GetUserId()).TimeZone;
 
             //Add to Ticket Details History that Comment was DELETED.
             TicketHistory ticketHistory = new TicketHistory();
             ticketHistory.AuthorId = User.Identity.GetUserId();
-            ticketHistory.Created = comment.Created;
+            ticketHistory.Created = DateTimeOffset.UtcNow;
             ticketHistory.TicketId = comment.TicketId;
             ticketHistory.Property = "COMMENT DELETED";
             ticketHistory.NewValue = comment.Body; // put the Comment Body in newValue to enable posting this body info in the History.
@@ -266,6 +269,46 @@ namespace jwhitehead_BugTracker.Controllers
             db.SaveChanges(); // saved and takes effect.
 
             return RedirectToAction("Details", "Tickets",  new { id = comment.TicketId });
+        }
+
+
+        //GET: Attachment/Delete/5
+        [Authorize(Roles = "Admin")]
+        public ActionResult AttachmentDelete(int? id)
+        {
+            TicketAttachment attachment = db.TicketAttachments.Find(id);
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            if (attachment == null)
+            {
+                return HttpNotFound();
+            }
+            return View(attachment);
+        }
+
+        // POST: Attachment/Delete/5
+        [Authorize(Roles = "Admin")]
+        [HttpPost, ActionName("AttachmentDelete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult AttachmentDeleteConfirmed(int id)
+        {
+            TicketAttachment attachment = db.TicketAttachments.Find(id);
+
+            //Add to Ticket Details History that Attachment was DELETED.
+            TicketHistory ticketHistory = new TicketHistory();
+            ticketHistory.AuthorId = User.Identity.GetUserId();
+            ticketHistory.Created = DateTimeOffset.UtcNow;
+            ticketHistory.TicketId = attachment.TicketId;
+            ticketHistory.Property = "ATTACHMENT DELETED";
+            ticketHistory.NewValue = attachment.FileUrl; // put the Attachment URL in newValue to enable posting this link info in the History.
+            db.TicketHistories.Add(ticketHistory); // adding Attachment info to Ticket History
+            db.TicketAttachments.Remove(attachment); // now remove Attachment from Ticket Attachments
+            db.SaveChanges(); // saved and takes effect.
+
+            return RedirectToAction("Details", "Tickets", new { id = ticketHistory.TicketId });
         }
 
 

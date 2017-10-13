@@ -80,8 +80,8 @@
         </dt>
 
         <dd>
-            @*@Html.ToUserTime(Model.Created, ViewBag.UserTimeZone as string, "MM-dd-yyyy hh:mm:ss")*@
-            @Html.DisplayFor(model => model.Created.UtcDateTime)
+            @*@Html.DisplayFor(model => model.Created.UtcDateTime)*@
+            @Html.ToUserTime(Model.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
         </dd>
 
         <dt>
@@ -89,7 +89,10 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Updated)
+            @if (Model.Updated != null)
+            {
+                @Html.ToUserTime(Model.Updated.Value, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
+            }
         </dd>
 
         <dt>
@@ -118,7 +121,7 @@
     <div class="form-group">
         <label class="control-label col-md-2">Description</label>
         <div class="col-md-10">
-            <input name="Description" type="text" class="form-control" /> @*name image should be the same as....*@
+            <input name="description" type="text" class="form-control" /> @*name Description should be the same as....*@
         </div>
     </div>
     <div class="form-group">
@@ -133,7 +136,22 @@
 <h3>Attachments</h3>
 @foreach (var attachment in Model.Attachments)
 {
-    <a href="@attachment.FileUrl" target="_blank">@attachment.FileUrl</a><br />
+    <p>
+        <span style="font-weight: 600">@attachment.Author.FullName </span>uploaded file:
+        <a href="@attachment.FileUrl" target="_blank">@attachment.FileUrl</a>
+        <br />
+        <span style="font-weight: 600">Created Date: </span>@Html.ToUserTime(attachment.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
+        <br />
+        <span style="font-weight: 600">Description: </span>@attachment.Description
+        <br />
+        @if (User.IsInRole("Admin"))
+        {
+            @Html.ActionLink("Edit", "Edit", "Tickets", new { id = attachment.Id }, new { @class = "editText" }) <span>|</span>
+            @Html.ActionLink("Delete", "AttachmentDelete", "Tickets", new { id = attachment.Id }, new { @class = "editText" })
+        }
+        <br />
+        <br />
+    </p>
 }
 <hr style="border-color: #808080; margin-top: 50px;" />
 
@@ -160,12 +178,16 @@
 {
     if (comment != null && comment.AuthorId != null)
     {
-        <p><span style="font-weight: 600">@comment.Body</span> - @comment.Author.FullName <br />@comment.Created.UtcDateTime</p>
+        <p>
+            <span style="font-weight: 600">@comment.Body</span> - @comment.Author.FullName
+            <br />
+            @Html.ToUserTime(comment.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
+        </p>
 
         <p style="margin: 0px 0px 0px 0px;">
             @if (User.IsInRole("Admin"))
             {
-                @Html.ActionLink("Edit", "Edit", "Comments", new { id = comment.Id }, new { @class = "editText" }) <span>|</span>
+                @Html.ActionLink("Edit", "Edit", "Tickets", new { id = comment.Id }, new { @class = "editText" }) <span>|</span>
                 @Html.ActionLink("Delete", "CommentDelete", "Tickets", new { id = comment.Id }, new { @class = "editText" })
             }
         </p>
@@ -184,7 +206,7 @@
         if (history.Property == "TICKET CREATED")
         {
             <p>
-                <span style="color: #10653a; font-weight: 600">@history.Property</span> - @history.Created.UtcDateTime
+                <span style="color: #10653a; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
                 <br />
                 @history.Author.FullName
             </p>
@@ -194,7 +216,7 @@
         if (history.Property == "NEW TICKET ATTACHMENT")
         {
             <p>
-                <span style="color: #635645; font-weight: 600">@history.Property</span> - @history.Created.UtcDateTime
+                <span style="color: #635645; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
                 <br />
                 @history.Author.FullName
             </p>
@@ -207,7 +229,7 @@
         if (history.Property == "NEW TICKET COMMENT")
         {
             <p>
-                <span style="color: #334959; font-weight: 600">@history.Property</span> - @history.Created.UtcDateTime
+                <span style="color: #334959; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
             </p>
             <p>
                 @history.Author.FullName added this comment:<br />
@@ -219,12 +241,26 @@
         if (history.Property == "COMMENT DELETED")
         {
             <p>
-                <span style="color: brown; font-weight: 600">@history.Property</span> - @history.Created.UtcDateTime
+                <span style="color: brown; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
                 <br />
-                @history.Author.FullName deleted this comment:<br />
+                @history.Author.FullName deleted this comment:
+                <br />
                 <span>&#34;@history.NewValue&#34;</span>
             </p>
             <br />
+        }
+
+        if (history.Property == "ATTACHMENT DELETED")
+        {
+            <p>
+                <span style="color: brown; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
+                <br />
+                @history.Author.FullName deleted this attachment:
+            </p>
+                <p>
+                    <span>&#34;@history.NewValue&#34;</span>
+                </p>
+                <br />
         }
     }
 }

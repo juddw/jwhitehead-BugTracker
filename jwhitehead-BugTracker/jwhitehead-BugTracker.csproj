@@ -1922,6 +1922,7 @@
     <Content Include="Views\Shared\_Layout - Original.cshtml" />
     <Content Include="Views\Tickets\NotAuthNoTickets.cshtml" />
     <Content Include="Views\Tickets\CommentDelete.cshtml" />
+    <Content Include="Views\Tickets\AttachmentDelete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

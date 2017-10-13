@@ -22,6 +22,8 @@ namespace jwhitehead_BugTracker.Controllers
                 ViewBag.FirstName = user.FirstName;
                 ViewBag.LastName = user.LastName;
                 ViewBag.FullName = user.FullName;
+
+                ViewBag.UserTimeZone = user.TimeZone;
             }
         }
     }
