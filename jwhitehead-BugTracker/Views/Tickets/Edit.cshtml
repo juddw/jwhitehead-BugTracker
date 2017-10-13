@@ -58,7 +58,7 @@
 
         <div class="form-group">
             @Html.LabelFor(model => model.Updated, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            <div class="col-md-10" style="margin-top: 7px;">
                 @if (Model.Updated != null)
                 {
                     @Html.ToUserTime(Model.Updated.Value, ViewBag.UserTimeZone as string, "MM-dd-yyyy hh:mm:ss")

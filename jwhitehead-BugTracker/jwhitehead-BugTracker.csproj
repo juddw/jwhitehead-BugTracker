@@ -211,6 +211,7 @@
     <Compile Include="Models\CodeFirst\TicketStatus.cs" />
     <Compile Include="Models\CodeFirst\TicketType.cs" />
     <Compile Include="Models\Helpers\CustomHelpers.cs" />
+    <Compile Include="Models\Helpers\HistoriesHelper.cs" />
     <Compile Include="Models\Helpers\ProjectAssignHelper.cs" />
     <Compile Include="Models\Helpers\UserRoleHelper.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -290,6 +291,7 @@
     <Content Include="assets\css\menu.css" />
     <Content Include="assets\css\pages.css" />
     <Content Include="assets\css\responsive.css" />
+    <Content Include="assets\css\myStyles.css" />
     <Content Include="assets\css\variables.css" />
     <Content Include="assets\fonts\dripicons-v2.svg" />
     <Content Include="assets\fonts\fontawesome-webfont.svg" />
@@ -1919,6 +1921,7 @@
     <Content Include="Views\Home\Index - Template.cshtml" />
     <Content Include="Views\Shared\_Layout - Original.cshtml" />
     <Content Include="Views\Tickets\NotAuthNoTickets.cshtml" />
+    <Content Include="Views\Tickets\CommentDelete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

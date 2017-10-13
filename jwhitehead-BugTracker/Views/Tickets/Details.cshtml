@@ -4,10 +4,13 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
+<h2>Ticket Details</h2>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
 
 <div>
-    <h4>Ticket</h4>
     <hr />
     <dl class="dl-horizontal">
 
@@ -78,7 +81,7 @@
 
         <dd>
             @*@Html.ToUserTime(Model.Created, ViewBag.UserTimeZone as string, "MM-dd-yyyy hh:mm:ss")*@
-            @Html.DisplayFor(model => model.Created)
+            @Html.DisplayFor(model => model.Created.UtcDateTime)
         </dd>
 
         <dt>
@@ -101,7 +104,6 @@
 </div>
 
 @*ADDING ATTACHMENTS*@
-@*@using (Html.BeginForm())*@
 @using (Html.BeginForm("CreateAttachment", "Tickets", FormMethod.Post, new { enctype = "Multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
@@ -119,80 +121,110 @@
             <input name="Description" type="text" class="form-control" /> @*name image should be the same as....*@
         </div>
     </div>
-
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Upload" class="btn btn-primary" style="margin-top: 10px;" />
+            <input type="submit" value="Upload" class="btn btn-primary" style="margin-top: 10px; margin-bottom: 30px;" />
         </div>
     </div>
 }
 
-<p style="margin-bottom: 30px;">
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
 
+@*ADDING ATTACHMENTS*@
 <h3>Attachments</h3>
-
 @foreach (var attachment in Model.Attachments)
 {
     <a href="@attachment.FileUrl" target="_blank">@attachment.FileUrl</a><br />
 }
-
-<hr style="border-color: #808080;" />
+<hr style="border-color: #808080; margin-top: 50px;" />
 
 
 @*ADDING COMMENTS with Mark*@
 @using (Html.BeginForm("CreateComments", "Tickets")) // way to grab data and send to backend.
 {
     @Html.AntiForgeryToken()
+
     <h3>Comments</h3>
     if (Request.IsAuthenticated)
     {
         <input type="number" name="TicketId" value="@Model.Id" hidden />
-        <textarea rows="5" cols="100" name="Body" required ></textarea> // user must enter something.
-        @*<input type="text" name="Body" rows="7" required style="width: 300px;" /> // user must enter something.*@
+        <textarea rows="5" cols="100" name="Body" required></textarea> @*user must enter something.*@
         <input class="btn btn-primary" style="margin-top: 10px; margin-bottom: 40px; display: block;" type="submit" value="Submit" />
-
     }
     else
     {
         <p>Please log in to leave a comment.</p>
     }
-    @*<hr style="border-color: #808080;" />*@
 }
-@*added with Mark*@
+
 @foreach (var comment in Model.Comments)
 {
     if (comment != null && comment.AuthorId != null)
     {
-        <p><span style="font-weight: 600">@comment.Body</span> - @comment.Author.FullName <br />@comment.Created</p>
+        <p><span style="font-weight: 600">@comment.Body</span> - @comment.Author.FullName <br />@comment.Created.UtcDateTime</p>
 
         <p style="margin: 0px 0px 0px 0px;">
             @if (User.IsInRole("Admin"))
             {
                 @Html.ActionLink("Edit", "Edit", "Comments", new { id = comment.Id }, new { @class = "editText" }) <span>|</span>
-                @Html.ActionLink("Delete", "Delete", "Comments", new { id = comment.Id }, new { @class = "editText" })
+                @Html.ActionLink("Delete", "CommentDelete", "Tickets", new { id = comment.Id }, new { @class = "editText" })
             }
         </p>
-
-        <hr style="border-color: #808080;" />
-
     }
 }
 
+@*TICKET HISTORY*@
+<hr style="border-color: #808080; margin-top: 50px;" />
 
 <h3>Ticket History</h3>
-<hr style="border-color: #808080;" />
-
+<br />
 @foreach (var history in Model.Histories)
 {
     if (history != null && history.AuthorId != null)
     {
-        <p><span style="font-weight: 600">@history.Property</span> - @history.Author.FullName <br />@history.Created</p>
+        if (history.Property == "TICKET CREATED")
+        {
+            <p>
+                <span style="color: #10653a; font-weight: 600">@history.Property</span> - @history.Created.UtcDateTime
+                <br />
+                @history.Author.FullName
+            </p>
+            <br />
+        }
 
-        <hr style="border-color: #808080;" />
+        if (history.Property == "NEW TICKET ATTACHMENT")
+        {
+            <p>
+                <span style="color: #635645; font-weight: 600">@history.Property</span> - @history.Created.UtcDateTime
+                <br />
+                @history.Author.FullName
+            </p>
+            <p>
+                <a href="/Uploads" + @history.NewValue target="_blank">@history.NewValue</a>
+            </p>
+            <br />
+        }
 
+        if (history.Property == "NEW TICKET COMMENT")
+        {
+            <p>
+                <span style="color: #334959; font-weight: 600">@history.Property</span> - @history.Created.UtcDateTime
+            </p>
+            <p>
+                @history.Author.FullName added this comment:<br />
+                <span style="color: #334959;">&#34;@history.NewValue&#34;</span>
+            </p>
+            <br />
+        }
+
+        if (history.Property == "COMMENT DELETED")
+        {
+            <p>
+                <span style="color: brown; font-weight: 600">@history.Property</span> - @history.Created.UtcDateTime
+                <br />
+                @history.Author.FullName deleted this comment:<br />
+                <span>&#34;@history.NewValue&#34;</span>
+            </p>
+            <br />
+        }
     }
 }
-

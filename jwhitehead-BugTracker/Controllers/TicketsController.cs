@@ -14,6 +14,7 @@ using jwhitehead_BugTracker.Models.Helpers;
 
 namespace jwhitehead_BugTracker.Controllers
 {
+    [Authorize]
     public class TicketsController : Universal
     {
 
@@ -101,7 +102,7 @@ namespace jwhitehead_BugTracker.Controllers
             ViewBag.TicketTypeId = new SelectList(db.TicketTypes, "Id", "Name");
             return View();
         }
-
+       
         // POST: Tickets/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
@@ -167,8 +168,26 @@ namespace jwhitehead_BugTracker.Controllers
                 var absPath = Server.MapPath("~" + filePath);  // physical file path
                 item.FileUrl = filePath + image.FileName; // path of the file
                 image.SaveAs(Path.Combine(absPath, image.FileName)); // saves
-                item.Created = System.DateTime.Now;
+                item.Created = DateTime.Now;
                 db.TicketAttachments.Add(item);
+
+                //Add to Ticket Details Page History that Attachment was made.
+                TicketHistory ticketHistory = new TicketHistory();
+                ticketHistory.AuthorId = User.Identity.GetUserId();
+                ticketHistory.Created = item.Created;
+                ticketHistory.TicketId = item.TicketId;
+                ticketHistory.Property = "NEW TICKET ATTACHMENT";
+                ticketHistory.NewValue = item.FileUrl; // put the url in newValue to enable posting it in the History.
+                db.TicketHistories.Add(ticketHistory);
+
+                // take snapshot of ticket when it is created
+                // put snapshot in OldValue
+                // when Ticket is Edited, take snapshot of ticket and put in NewValue
+                // compare all fields in OldValue to NewValue
+                // anything that changed post to Ticket Details under Edit POST action.
+                // set OldValue to NewValue
+                // 
+
                 db.SaveChanges();
                 return RedirectToAction("Details", new { id = item.TicketId });
             }
@@ -177,10 +196,11 @@ namespace jwhitehead_BugTracker.Controllers
         }
 
         // added with Mark
+        [Authorize]
         public ActionResult CreateComments([Bind(Include = "Id,Body,TicketId")] TicketComment comment)
         {
             var userId = User.Identity.GetUserId();
-
+          
             if (ModelState.IsValid)
             {
                 if (!String.IsNullOrWhiteSpace(userId))
@@ -189,13 +209,63 @@ namespace jwhitehead_BugTracker.Controllers
                     comment.Created = DateTimeOffset.UtcNow; // added in View/Web.config and CustomHelpers.cs
                     comment.AuthorId = User.Identity.GetUserId();
                     db.TicketComments.Add(comment);
+                   
+                    var post = db.Tickets.Find(comment.TicketId);
+
+                    //Add to Ticket Details Page History that Comment was made.
+                    TicketHistory ticketHistory = new TicketHistory();
+                    ticketHistory.AuthorId = User.Identity.GetUserId();
+                    ticketHistory.Created = comment.Created;
+                    ticketHistory.TicketId = comment.TicketId;
+                    ticketHistory.Property = "NEW TICKET COMMENT";
+                    ticketHistory.NewValue = comment.Body; // put the Comment Body in newValue to enable posting in the History.
+                    db.TicketHistories.Add(ticketHistory);
+
                     db.SaveChanges();
 
-                    var post = db.Tickets.Find(comment.TicketId);
                     return RedirectToAction("Details", new { id = comment.TicketId });
                 }
             }
             return RedirectToAction("Index");
+        }
+
+        //GET: Comments/Delete/5
+        [Authorize(Roles = "Admin")]
+        public ActionResult CommentDelete(int? id)
+        {
+            TicketComment comments = db.TicketComments.Find(id);
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            if (comments == null)
+            {
+                return HttpNotFound();
+            }
+            return View(comments);
+        }
+
+        // POST: Comments/Delete/5
+        [Authorize(Roles = "Admin")]
+        [HttpPost, ActionName("CommentDelete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult CommentDeleteConfirmed(int id)
+        {
+            TicketComment comment = db.TicketComments.Find(id);
+
+            //Add to Ticket Details History that Comment was DELETED.
+            TicketHistory ticketHistory = new TicketHistory();
+            ticketHistory.AuthorId = User.Identity.GetUserId();
+            ticketHistory.Created = comment.Created;
+            ticketHistory.TicketId = comment.TicketId;
+            ticketHistory.Property = "COMMENT DELETED";
+            ticketHistory.NewValue = comment.Body; // put the Comment Body in newValue to enable posting this body info in the History.
+            db.TicketHistories.Add(ticketHistory); // adding Comment info to Ticket History
+            db.TicketComments.Remove(comment); // now remove Comment from Ticket Comments
+            db.SaveChanges(); // saved and takes effect.
+
+            return RedirectToAction("Details", "Tickets",  new { id = comment.TicketId });
         }
 
 
@@ -308,11 +378,11 @@ namespace jwhitehead_BugTracker.Controllers
         [Authorize]
         public ActionResult Delete(int? id)
         {
+            Ticket ticket = db.Tickets.Find(id);
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Ticket ticket = db.Tickets.Find(id);
             if (ticket == null)
             {
                 return HttpNotFound();

@@ -14,9 +14,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - My ASP.NET Application</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link href="~/assets/multi-select/multiselect.css" rel="stylesheet" /> @*added with Ryan - multi-select roles switch box*@
-    <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="~/assets/css/myStyles.css" rel="stylesheet" />
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 
@@ -24,47 +22,16 @@
 
 <body style="background-color: black;">
 
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("BugTracker App.", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+   <div class="row">
+        <div style="margin: auto; width: 500px; height: auto; background-color: white; border-style: solid; border-color: white; border-width: 5px; border-radius: 15px 0px; margin-top: 60px;">
+            <div style="background-color: #334959; border-style: none; border-radius: 12px 0px; padding-left: 20px; padding-top: 10px; padding-bottom: 20px;">
+                <h2 style="color: white; font-weight: 500;">@ViewBag.Title.</h2>
+                <h4 style="color: white; font-weight: 300; ">Use a local account to log in.</h4>
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    @*<li>@Html.ActionLink("Home", "Index", "Home")</li>*@
-                    <li>@Html.ActionLink("Assigned Projects", "Index", "Projects", null, new { style = "margin-left: 50px;" })</li>
-                    @if (!User.IsInRole("Submitter"))
-                    {
-                        <li>@Html.ActionLink("All Projects", "AllProjectsIndex", "Projects")</li>
-                    }
-                    <li>@Html.ActionLink("Tickets", "Index", "Tickets")</li>
-                    @if (!User.IsInRole("Submitter"))
-                    {
-                        <li>@Html.ActionLink("Edit Roles", "Index", "Admin")</li>
-                    }
-
-                    @*<li>@Html.ActionLink("About", "About", "Home")</li>*@
-                    @*<li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@
-                </ul>
-                @Html.Partial("_LoginPartial")
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div style="margin: auto; width: 500px; height: auto; background-color: white; border-style: solid; border-width: thin; padding: 20px; margin-top: 80px;">
-            <h2>@ViewBag.Title.</h2>
-            <section id="loginForm">
+            <section id="loginForm" style="padding: 20px;">
                 @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-            {
+                {
                     @Html.AntiForgeryToken()
-                    <h4>Use a local account to log in.</h4>
-                    <hr />
                     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                     <div class="form-group">
                         @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
@@ -90,7 +57,7 @@
                     </div>
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            <input type="submit" value="Log in" class="btn btn-primary" />
+                            <input type="submit" value="Log in" class="btn btn-primary" id="logInButton" />
                         </div>
                     </div>
                     <p>
@@ -101,7 +68,7 @@
                         @Html.ActionLink("Forgot your password?", "ForgotPassword")
                     </p>
 
-                    <hr />
+                    <hr style="border-color: #808080;" />
                     <footer>
                         <p>&copy; @DateTime.Now.Year - Judd Whitehead</p>
                     </footer>

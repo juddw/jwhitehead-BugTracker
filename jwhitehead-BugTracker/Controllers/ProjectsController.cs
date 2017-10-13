@@ -13,6 +13,7 @@ using Microsoft.AspNet.Identity;
 
 namespace jwhitehead_BugTracker.Controllers
 {
+    [Authorize]
     public class ProjectsController : Universal
     {
         // GET: Projects

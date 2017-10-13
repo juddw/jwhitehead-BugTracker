@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace jwhitehead_BugTracker.Controllers
 {
+    [Authorize]
     public class HomeController : Universal
     {
         public ActionResult Index()
