@@ -23,6 +23,7 @@ namespace jwhitehead_BugTracker.Controllers
             return View(db.Projects.ToList());
         }
 
+
         // GET all projects if Admin or Project Manager
         [Authorize]
         public ActionResult ProjectAdmin()
@@ -36,6 +37,7 @@ namespace jwhitehead_BugTracker.Controllers
                 return RedirectToAction("Index");
             }
         }
+
 
         // GET: Assigned Projects
         private ProjectAssignHelper helper = new ProjectAssignHelper();
@@ -56,6 +58,7 @@ namespace jwhitehead_BugTracker.Controllers
                 return View();
             }
         }
+
 
         // GET: Projects/Details/5
         [Authorize]
@@ -79,12 +82,14 @@ namespace jwhitehead_BugTracker.Controllers
             return RedirectToAction("AssignedProjectsIndex");
         }
 
+
         // GET: Projects/Create
         [Authorize(Roles = "Admin, Project Manager")]
         public ActionResult Create()
         {
             return View();
         }
+
 
         // POST: Projects/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -107,6 +112,7 @@ namespace jwhitehead_BugTracker.Controllers
             return View(project);
         }
 
+
         // GET: Projects/Edit/5
         [Authorize(Roles = "Admin, Project Manager")]
         public ActionResult Edit(int? id)
@@ -122,6 +128,7 @@ namespace jwhitehead_BugTracker.Controllers
             }
             return View(project);
         }
+
 
         // POST: Projects/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -140,6 +147,7 @@ namespace jwhitehead_BugTracker.Controllers
             return View(project);
         }
 
+
         // GET: Projects/Delete/5
         [Authorize(Roles = "Admin")]
         public ActionResult Delete(int? id)
@@ -155,6 +163,7 @@ namespace jwhitehead_BugTracker.Controllers
             }
             return View(project);
         }
+
 
         // POST: Projects/Delete/5
         [Authorize(Roles = "Admin")]
@@ -183,6 +192,7 @@ namespace jwhitehead_BugTracker.Controllers
             return View(projectuserVM);
         }
 
+
         [HttpPost]
         [Authorize(Roles = "Admin, Project Manager")]
         [ValidateAntiForgeryToken]
@@ -201,6 +211,7 @@ namespace jwhitehead_BugTracker.Controllers
             }
             return RedirectToAction("AssignedProjectsIndex");
         }
+
 
         protected override void Dispose(bool disposing)
         {

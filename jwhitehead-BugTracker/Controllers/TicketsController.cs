@@ -137,6 +137,7 @@ namespace jwhitehead_BugTracker.Controllers
                 db.SaveChanges();
 
                 // NOTIFICATION CREATE
+                //@ if (ticketHistory.AuthorId == "Developer")
                 // grab developer's email and send to forgot password
 
 
