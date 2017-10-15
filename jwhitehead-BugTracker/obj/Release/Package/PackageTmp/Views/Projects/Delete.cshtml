@@ -16,7 +16,8 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Created)
+            @*@Html.DisplayFor(model => model.Created.UtcDateTime)*@
+            @Html.ToUserTime(Model.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
         </dd>
 
         <dt>
@@ -24,7 +25,10 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Updated)
+            @if (Model.Updated != null)
+            {
+                @Html.ToUserTime(Model.Updated.Value, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
+            }
         </dd>
 
         <dt>
@@ -56,8 +60,8 @@
     @using (Html.BeginForm()) {
         @Html.AntiForgeryToken()
 
-        <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-default" /> |
+        <div class="form-actions no-color" style="margin-bottom: 30px;">
+            <input type="submit" value="Delete" class="btn btn-danger" /> |
             @Html.ActionLink("Back to List", "Index")
         </div>
     }
