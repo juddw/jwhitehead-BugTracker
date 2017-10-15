@@ -40,8 +40,11 @@ else
                 <thead>
                     <tr>
                         <th>
-                            Assigned To
-                            @*@Html.DisplayNameFor(model => model.AssignToUser.FirstName)*@
+                            Ticket Name
+                            @*@Html.DisplayNameFor(model => model.Title)*@
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Description)
                         </th>
                         <th>
                             Created By
@@ -52,6 +55,10 @@ else
                             @*@Html.DisplayNameFor(model => model.Project.Title)*@
                         </th>
                         <th>
+                            Ticket Type
+                            @*@Html.DisplayNameFor(model => model.TicketType)*@
+                        </th>
+                        <th>
                             Priority
                             @*@Html.DisplayNameFor(model => model.TicketPriority.Name)*@
                         </th>
@@ -60,11 +67,8 @@ else
                             @*@Html.DisplayNameFor(model => model.TicketStatus.Name)*@
                         </th>
                         <th>
-                            Ticket Name
-                            @*@Html.DisplayNameFor(model => model.Title)*@
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Description)
+                            Assigned To
+                            @*@Html.DisplayNameFor(model => model.AssignToUser.FirstName)*@
                         </th>
                         @*<th>
                                 @Html.DisplayNameFor(model => model.Created)
@@ -72,10 +76,6 @@ else
                             <th>
                                 @Html.DisplayNameFor(model => model.Updated)
                             </th>*@
-                        <th>
-                            Ticket Type
-                            @*@Html.DisplayNameFor(model => model.TicketType)*@
-                        </th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -85,7 +85,10 @@ else
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.AssignToUser.FullName)
+                                @Html.DisplayFor(modelItem => item.Title)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Description)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.OwnerUser.FirstName)
@@ -94,16 +97,16 @@ else
                                 @Html.DisplayFor(modelItem => item.Project.Title)
                             </td>
                             <td>
+                                @Html.DisplayFor(modelItem => item.TicketType.Name)
+                            </td>
+                            <td>
                                 @Html.DisplayFor(modelItem => item.TicketPriority.Name)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.TicketStatus.Name)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Title)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Description)
+                                @Html.DisplayFor(modelItem => item.AssignToUser.FullName)
                             </td>
                             @*<td>
                                    @Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM-dd-yyyy hh:mm:ss")
@@ -115,9 +118,6 @@ else
                                     }
                                 </td>*@
 
-                            <td>
-                                @Html.DisplayFor(modelItem => item.TicketType.Name)
-                            </td>
                             <td>
                                 @Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { style = "display: block;" })
                                 @Html.ActionLink("Details", "Details", new { id = item.Id }, new { style = "display: block;" })

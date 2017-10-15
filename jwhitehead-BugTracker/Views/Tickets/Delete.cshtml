@@ -74,7 +74,7 @@
 
         <dd>
             @Html.DisplayFor(model => model.Created.UtcDateTime)
-            @Html.ToUserTime(Model.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
+            @Html.ToUserTime(Model.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
         </dd>
 
         <dt>
@@ -84,7 +84,7 @@
         <dd>
             @if (Model.Updated != null)
             {
-                 @Html.ToUserTime(Model.Updated.Value, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
+                 @Html.ToUserTime(Model.Updated.Value, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
             }
         </dd>
 

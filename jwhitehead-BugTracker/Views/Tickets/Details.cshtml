@@ -81,7 +81,7 @@
 
         <dd>
             @*@Html.DisplayFor(model => model.Created.UtcDateTime)*@
-            @Html.ToUserTime(Model.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
+            @Html.ToUserTime(Model.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
         </dd>
 
         <dt>
@@ -91,7 +91,7 @@
         <dd>
             @if (Model.Updated != null)
             {
-                @Html.ToUserTime(Model.Updated.Value, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
+                @Html.ToUserTime(Model.Updated.Value, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
             }
         </dd>
 
@@ -140,7 +140,7 @@
         <span style="font-weight: 600">@attachment.Author.FullName </span>uploaded file:
         <a href="@attachment.FileUrl" target="_blank">@attachment.FileUrl</a>
         <br />
-        <span style="font-weight: 600">Created Date: </span>@Html.ToUserTime(attachment.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
+        <span style="font-weight: 600">Created Date: </span>@Html.ToUserTime(attachment.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
         <br />
         <span style="font-weight: 600">Description: </span>@attachment.Description
         <br />
@@ -156,7 +156,7 @@
 <hr style="border-color: #808080; margin-top: 50px;" />
 
 
-@*ADDING COMMENTS with Mark*@
+@*ADDING COMMENTS*@
 @using (Html.BeginForm("CreateComments", "Tickets")) // way to grab data and send to backend.
 {
     @Html.AntiForgeryToken()
@@ -181,19 +181,23 @@
         <p>
             <span style="font-weight: 600">@comment.Body</span> - @comment.Author.FullName
             <br />
-            @Html.ToUserTime(comment.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
+            @Html.ToUserTime(comment.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
         </p>
 
         <p style="margin: 0px 0px 0px 0px;">
-            @if (User.IsInRole("Admin"))
-            {
-                @Html.ActionLink("Edit", "Edit", "Tickets", new { id = comment.Id }, new { @class = "editText" }) <span>|</span>
-                @Html.ActionLink("Delete", "CommentDelete", "Tickets", new { id = comment.Id }, new { @class = "editText" })
-            }
-        </p>
-    }
-}
+            @{
+                        // Permission by Roles Edit/Delete Buttons for Comments
+                        if (User.IsInRole("Admin") || User.IsInRole("Project Manager") && comment.Ticket.Project.Users.Any(u => u.Id == ViewBag.UserId) || comment.AuthorId == ViewBag.UserId)
+                        {
+                            @Html.ActionLink("Edit", "CommentEdit", "Tickets", new { id = comment.Id }, new { @class = "editText" }) <span>|</span>
+                            @Html.ActionLink("Delete", "CommentDelete", "Tickets", new { id = comment.Id }, new { @class = "editText" })
+                        }
+                    }
 
+        </p>
+        <br />
+                    }
+            }
 @*TICKET HISTORY*@
 <hr style="border-color: #808080; margin-top: 50px;" />
 
@@ -206,7 +210,7 @@
         if (history.Property == "TICKET CREATED")
         {
             <p>
-                <span style="color: #10653a; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
+                <span style="color: #10653a; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
                 <br />
                 @history.Author.FullName
             </p>
@@ -216,7 +220,7 @@
         if (history.Property == "NEW TICKET ATTACHMENT")
         {
             <p>
-                <span style="color: #635645; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
+                <span style="color: #635645; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
                 <br />
                 @history.Author.FullName
             </p>
@@ -229,10 +233,11 @@
         if (history.Property == "NEW TICKET COMMENT")
         {
             <p>
-                <span style="color: #334959; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
+                <span style="color: #334959; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
+                <br />
+                @history.Author.FullName added this comment:
             </p>
             <p>
-                @history.Author.FullName added this comment:<br />
                 <span style="color: #334959;">&#34;@history.NewValue&#34;</span>
             </p>
             <br />
@@ -241,10 +246,11 @@
         if (history.Property == "COMMENT DELETED")
         {
             <p>
-                <span style="color: brown; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
+                <span style="color: brown; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
                 <br />
                 @history.Author.FullName deleted this comment:
-                <br />
+            </p>
+            <p>
                 <span>&#34;@history.NewValue&#34;</span>
             </p>
             <br />
@@ -253,14 +259,14 @@
         if (history.Property == "ATTACHMENT DELETED")
         {
             <p>
-                <span style="color: brown; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
+                <span style="color: brown; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
                 <br />
                 @history.Author.FullName deleted this attachment:
             </p>
-                <p>
-                    <span>&#34;@history.NewValue&#34;</span>
-                </p>
-                <br />
+            <p>
+                <span>&#34;@history.NewValue&#34;</span>
+            </p>
+            <br />
         }
     }
 }

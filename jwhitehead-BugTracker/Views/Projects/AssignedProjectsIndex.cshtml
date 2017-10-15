@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<jwhitehead_BugTracker.Models.CodeFirst.Project>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Assigned Projects Index";
 }
 
-<h2>All Projects Listing</h2>
+<h2>Assigned Projects for @ViewBag.FullName</h2>
 
 <p>
     @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
@@ -39,9 +39,6 @@
                 <thead>
                     <tr>
                         <th>
-                            @Html.DisplayNameFor(model => model.Created)
-                        </th>
-                        <th>
                             Project Name
                             @*@Html.DisplayNameFor(model => model.Title)*@
                         </th>
@@ -49,52 +46,61 @@
                             @Html.DisplayNameFor(model => model.Description)
                         </th>
                         <th>
+                            # of Tickets
+                        </th>
+                        <th>
                             Assigned To
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Created)
                         </th>
                         <th>Action</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    @foreach (var item in Model)
+                    @foreach (var project in Model)
                     {
-                    <tr>
-                        <td>
-                            @Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM-dd-yyyy hh:mm:ss")
-                            @*@Html.DisplayFor(modelItem => item.Created)*@
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Title)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Description)
-                        </td>
-                        <td>
-                            @foreach (var user in item.Users)
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => project.Title)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => project.Description)
+                            </td>
+                            <td style="text-align: center;">
+                                @project.Tickets.Count
+                            </td>
+                            <td>
+                                @foreach (var user in project.Users)
                 {
-                                @user.FullName <br />
+                                    @user.FullName <br />
                                 }
-                        </td>
+                            </td>
+                            <td>
+                                @Html.ToUserTime(project.Created, ViewBag.UserTimeZone as string, "MM-dd-yyyy, h:mm:ss tt")
+                                @*@Html.DisplayFor(modelItem => project.Created)*@
+                            </td>
 
-                        <td style="display: block;">
-                            @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
+                            <td style="display: block;">
+                                @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
                 {
-                                @Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { style = "display: block;" })
-                                }
-
-                            @if (User.IsInRole("Admin"))
-                {
-                                @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { style = "display: block;" })
+                                    @Html.ActionLink("Edit", "Edit", new { id = project.Id }, new { style = "display: block;" })
                                 }
 
-                            @Html.ActionLink("Details", "Details", new { id = item.Id }, new { style = "display: block;" })
-
-                            @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
+                                @if (User.IsInRole("Admin"))
                 {
-                                @Html.ActionLink("Assign", "ProjectUser", new { id = item.Id }, new { style = "display: block;" })
+                                    @Html.ActionLink("Delete", "Delete", new { id = project.Id }, new { style = "display: block;" })
                                 }
-                        </td>
-                    </tr>
+
+                                @Html.ActionLink("Details", "Details", new { id = project.Id }, new { style = "display: block;" })
+
+                                @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
+                {
+                                    @Html.ActionLink("Assign", "ProjectUser", new { id = project.Id }, new { style = "display: block;" })
+                                }
+                            </td>
+                        </tr>
                     }
                 </tbody>
 

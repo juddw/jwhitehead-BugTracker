@@ -5,21 +5,20 @@
 }
 
 <h2>Edit User Roles</h2>
-<hr />
 
 @using (Html.BeginForm("EditUserRoles", "Admin", FormMethod.Post))
 {
     <h4>
         @Html.DisplayFor(model => model.User.FullName)
-        <input type="submit" value="Assign Roles" class="btn btn-default pull-right" style="margin-top: -7px" />
     </h4>
     <hr />
     @Html.HiddenFor(model => model.User.Id)
     // added with Ryan - multi-select roles switch box
     @Html.ListBox("SelectedRoles", Model.Roles, new { @class = "multi-select" }) // comes from AdminUserViewModels.cs
+    <input type="submit" value="Assign Roles" class="btn btn-primary" style="margin-top: 10px;" />
 }
 
-<div style="margin-top: 40px">
+<div style="margin-top: 40px; margin-bottom: 30px;">
     @Html.ActionLink("Back to Admin Index", "Index")
 </div>
 
@@ -31,8 +30,8 @@
         $(function () {
             "use strict";
             $('.multi-select').multiSelect({
-                selectableHeader: "<div style='text-align: center; font-size:16px; height: 25px; background-color: black; color: white'><strong>Available Roles</strong></div>",
-                selectionHeader: "<div style='text-align: center; font-size:16px; height: 25px; background-color: black; color: white'><strong>User Roles</strong></div>"
+                selectableHeader: "<div style='text-align: center; font-size:16px; height: 30px; background-color: black; color: white'><strong>Available Roles</strong></div>",
+                selectionHeader: "<div style='text-align: center; font-size:16px; height: 30px; background-color: black; color: white'><strong>User Roles</strong></div>"
             });
         });
     </script>

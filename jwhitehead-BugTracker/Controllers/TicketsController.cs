@@ -47,11 +47,14 @@ namespace jwhitehead_BugTracker.Controllers
             return View("NotAuthNoTickets");
         }
 
-        // GET: Tickets/Details/5
+
+        // GET: Tickets/Details/
         [Authorize]
         public ActionResult Details(int? id)
         {
             var user = db.Users.Find(User.Identity.GetUserId());
+            ViewBag.UserId = user.Id; // for passing UserId to the Details View for determining to show Edit/Delete buttons.
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -61,6 +64,7 @@ namespace jwhitehead_BugTracker.Controllers
             {
                 return HttpNotFound();
             }
+
             if (User.IsInRole("Admin"))
             {
                 return View(ticket);
@@ -89,7 +93,6 @@ namespace jwhitehead_BugTracker.Controllers
         }
 
 
-
         // GET: Tickets/Create
         [Authorize(Roles = "Submitter")] // this will only allow access to Submitter.
         public ActionResult Create()
@@ -103,6 +106,7 @@ namespace jwhitehead_BugTracker.Controllers
             return View();
         }
        
+
         // POST: Tickets/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
@@ -132,9 +136,13 @@ namespace jwhitehead_BugTracker.Controllers
 
                 db.SaveChanges();
 
+                // NOTIFICATION CREATE
+                // grab developer's email and send to forgot password
+
 
                 return RedirectToAction("Index");
             }
+
 
             // catch all - repopulates fields with selected info before error.
             ViewBag.ProjectId = new SelectList(db.Projects.Where(p => p.Users.Any(u => u.Id == user.Id)), "Id", "Title");
@@ -145,7 +153,7 @@ namespace jwhitehead_BugTracker.Controllers
         }
 
 
-        // POST: Items/Create
+        // POST: Attachments/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [Authorize]
@@ -196,7 +204,8 @@ namespace jwhitehead_BugTracker.Controllers
             return View(item);
         }
 
-        // added with Mark
+
+        // Commments/Create/
         [Authorize]
         public ActionResult CreateComments([Bind(Include = "Id,Body,TicketId")] TicketComment comment)
         {
@@ -230,10 +239,12 @@ namespace jwhitehead_BugTracker.Controllers
             return RedirectToAction("Index");
         }
 
-        //GET: Comments/Delete/5
-        [Authorize(Roles = "Admin")]
+
+        //GET: Comments/Delete/
+        [Authorize]
         public ActionResult CommentDelete(int? id)
         {
+            var user = db.Users.Find(User.Identity.GetUserId());
             TicketComment comments = db.TicketComments.Find(id);
             if (id == null)
             {
@@ -244,11 +255,38 @@ namespace jwhitehead_BugTracker.Controllers
             {
                 return HttpNotFound();
             }
+         
+            if (User.IsInRole("Admin"))
+            {
+                return View(comments);
+            }
+            else if (User.IsInRole("Project Manager") && !comments.Ticket.Project.Users.Any(u => u.Id == user.Id))
+            {
+                return View("NotAuthNoTickets");
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            else if (User.IsInRole("Developer") && comments.Ticket.AssignToUserId != user.Id)
+            {
+                return View("NotAuthNoTickets");
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            else if (User.IsInRole("Submitter") && comments.Ticket.OwnerUserId != user.Id)
+            {
+                return View("NotAuthNoTickets");
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            else if (user.Roles.Count == 0)
+            {
+                return View("NotAuthNoTickets");
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+     
             return View(comments);
         }
 
-        // POST: Comments/Delete/5
-        [Authorize(Roles = "Admin")]
+
+        // POST: Comments/Delete/
+        [Authorize]
         [HttpPost, ActionName("CommentDelete")]
         [ValidateAntiForgeryToken]
         public ActionResult CommentDeleteConfirmed(int id)
@@ -272,8 +310,8 @@ namespace jwhitehead_BugTracker.Controllers
         }
 
 
-        //GET: Attachment/Delete/5
-        [Authorize(Roles = "Admin")]
+        //GET: Attachment/Delete/
+        [Authorize]
         public ActionResult AttachmentDelete(int? id)
         {
             TicketAttachment attachment = db.TicketAttachments.Find(id);
@@ -289,8 +327,9 @@ namespace jwhitehead_BugTracker.Controllers
             return View(attachment);
         }
 
-        // POST: Attachment/Delete/5
-        [Authorize(Roles = "Admin")]
+
+        // POST: Attachment/Delete/
+        [Authorize]
         [HttpPost, ActionName("AttachmentDelete")]
         [ValidateAntiForgeryToken]
         public ActionResult AttachmentDeleteConfirmed(int id)
@@ -334,7 +373,50 @@ namespace jwhitehead_BugTracker.Controllers
         //    return View(ticket);
         //}
 
-        // GET: Tickets/Edit/5
+
+        // GET: TicketComments/Edit/
+        [Authorize]
+        public ActionResult CommentEdit(int? id)
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            Ticket ticket = db.Tickets.Find(id);
+    
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            if (ticket == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (User.IsInRole("Admin"))
+            {
+                return View(ticket);
+            }
+            else if (User.IsInRole("Project Manager") && !ticket.Project.Users.Any(u => u.Id == user.Id))
+            {
+                return View("NotAuthNoTickets");
+            }
+            else if (User.IsInRole("Developer") && ticket.AssignToUserId != user.Id)
+            {
+                return View("NotAuthNoTickets");
+            }
+            else if (User.IsInRole("Submitter") && ticket.OwnerUserId != user.Id)
+            {
+                return View("NotAuthNoTickets");
+            }
+            else if (user.Roles.Count == 0)
+            {
+                return View("NotAuthNoTickets");
+            }
+
+            return View(ticket);
+        }
+
+
+        // GET: Tickets/Edit/
         [Authorize]
         public ActionResult Edit(int? id)
         {
@@ -387,7 +469,8 @@ namespace jwhitehead_BugTracker.Controllers
             return View(ticket);
         }
 
-        // POST: Tickets/Edit/5
+
+        // POST: Tickets/Edit/
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -417,7 +500,8 @@ namespace jwhitehead_BugTracker.Controllers
             return View(ticket);
         }
 
-        // GET: Tickets/Delete/5
+
+        // GET: Tickets/Delete/
         [Authorize]
         public ActionResult Delete(int? id)
         {
@@ -433,7 +517,8 @@ namespace jwhitehead_BugTracker.Controllers
             return View(ticket);
         }
 
-        //// POST: Tickets/Delete/5
+
+        //// POST: Tickets/Delete/
         //[HttpPost, ActionName("Delete")]
         //[Authorize]
         //[ValidateAntiForgeryToken]
@@ -444,6 +529,7 @@ namespace jwhitehead_BugTracker.Controllers
         //    db.SaveChanges();
         //    return RedirectToAction("Index");
         //}
+
 
         protected override void Dispose(bool disposing)
         {

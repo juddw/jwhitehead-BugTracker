@@ -16,30 +16,8 @@ namespace jwhitehead_BugTracker.Controllers
     [Authorize]
     public class ProjectsController : Universal
     {
-        // GET: Projects
-        private ProjectAssignHelper helper = new ProjectAssignHelper();
-
-        [Authorize]
-        public ActionResult Index()
-        {
-            if (Request.IsAuthenticated)
-            {
-                ViewBag.UserTimeZone = db.Users.Find(User.Identity.GetUserId()).TimeZone;
-                var userId = User.Identity.GetUserId();
-                var userProjects = helper.ListUserProjects(userId);
-                return View(userProjects); //PagedList??
-            }
-            else
-            {
-                ViewBag.UserTimeZone = db.Users.Find(User.Identity.GetUserId()).TimeZone;
-                return View();
-            }
-        }
-
         [Authorize(Roles = "Admin, Project Manager")]
-        public ActionResult AllProjectsIndex()
-
-
+        public ActionResult Index()
         {
             ViewBag.UserTimeZone = db.Users.Find(User.Identity.GetUserId()).TimeZone;
             return View(db.Projects.ToList());
@@ -56,6 +34,26 @@ namespace jwhitehead_BugTracker.Controllers
             else
             {
                 return RedirectToAction("Index");
+            }
+        }
+
+        // GET: Assigned Projects
+        private ProjectAssignHelper helper = new ProjectAssignHelper();
+
+        [Authorize]
+        public ActionResult AssignedProjectsIndex()
+        {
+            if (Request.IsAuthenticated)
+            {
+                ViewBag.UserTimeZone = db.Users.Find(User.Identity.GetUserId()).TimeZone;
+                var userId = User.Identity.GetUserId();
+                var userProjects = helper.ListUserProjects(userId);
+                return View(userProjects);
+            }
+            else
+            {
+                ViewBag.UserTimeZone = db.Users.Find(User.Identity.GetUserId()).TimeZone;
+                return View();
             }
         }
 
@@ -78,7 +76,7 @@ namespace jwhitehead_BugTracker.Controllers
             {
                 return View(project);
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("AssignedProjectsIndex");
         }
 
         // GET: Projects/Create
@@ -103,7 +101,7 @@ namespace jwhitehead_BugTracker.Controllers
 
                 db.Projects.Add(project);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("AssignedProjectsIndex");
             }
 
             return View(project);
@@ -137,7 +135,7 @@ namespace jwhitehead_BugTracker.Controllers
             {
                 db.Entry(project).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("AssignedProjectsIndex");
             }
             return View(project);
         }
@@ -167,7 +165,7 @@ namespace jwhitehead_BugTracker.Controllers
             Project project = db.Projects.Find(id);
             db.Projects.Remove(project);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction("AssignedProjectsIndex");
         }
 
 
@@ -201,7 +199,7 @@ namespace jwhitehead_BugTracker.Controllers
             {
                 helper.AddUserToProject(userId, model.AssignProjectId);
             }
-            return RedirectToAction("AllProjectsIndex");
+            return RedirectToAction("AssignedProjectsIndex");
         }
 
         protected override void Dispose(bool disposing)

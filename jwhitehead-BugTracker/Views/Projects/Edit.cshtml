@@ -20,7 +20,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Created, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10" style="margin-top: 7px;">
-                @Html.ToUserTime(Model.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy h:mm:ss tt")
+                @Html.ToUserTime(Model.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
                 @*@Html.EditorFor(model => model.Created.UtcDateTime, new { htmlAttributes = new { @class = "form-control" } })*@
                 @Html.ValidationMessageFor(model => model.Created, "", new { @class = "text-danger" })
             </div>
@@ -67,7 +67,7 @@
     </div>
 }
 
-<div>
+<div style="margin-bottom: 30px;">
     @Html.ActionLink("Back to List", "Index")
 </div>
 

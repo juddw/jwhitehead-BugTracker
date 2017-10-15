@@ -11,9 +11,9 @@ File: Menu
   font-family: 'Rancho', cursive;
   float: left;
 }
-.logo span span {
-  color: #10c469 !important;
-}
+    .logo span span {
+        color: #71b6f9 !important;
+    }
 #topnav {
   position: fixed;
   right: 0;

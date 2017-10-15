@@ -358,6 +358,7 @@
     <Content Include="assets\images\small\img4.jpg" />
     <Content Include="assets\images\stardust.png" />
     <Content Include="assets\images\users\avatar-1.jpg" />
+    <Content Include="assets\images\users\avatar-silhouette.jpg" />
     <Content Include="assets\images\users\avatar-10.jpg" />
     <Content Include="assets\images\users\avatar-2.jpg" />
     <Content Include="assets\images\users\avatar-3.jpg" />
@@ -367,6 +368,10 @@
     <Content Include="assets\images\users\avatar-7.jpg" />
     <Content Include="assets\images\users\avatar-8.jpg" />
     <Content Include="assets\images\users\avatar-9.jpg" />
+    <Content Include="assets\images\users\avatar-judd.jpg" />
+    <Content Include="assets\images\users\avatar-mark.jpg" />
+    <Content Include="assets\images\users\avatar-ryan.jpg" />
+    <Content Include="assets\images\users\avatar-template.png" />
     <Content Include="assets\js\bootstrap.min.js" />
     <Content Include="assets\js\detect.js" />
     <Content Include="assets\js\fastclick.js" />
@@ -1916,7 +1921,7 @@
     <Content Include="Views\Projects\ProjectUser.cshtml" />
     <Content Include="Views\Manage\ChangeName.cshtml" />
     <Content Include="Views\Projects\ProjectAdmin.cshtml" />
-    <Content Include="Views\Projects\AllProjectsIndex.cshtml" />
+    <Content Include="Views\Projects\AssignedProjectsIndex.cshtml" />
     <Content Include="Views\Home\Index - Original.cshtml" />
     <Content Include="Views\Home\Index - Template.cshtml" />
     <Content Include="Views\Shared\_Layout - Original.cshtml" />
