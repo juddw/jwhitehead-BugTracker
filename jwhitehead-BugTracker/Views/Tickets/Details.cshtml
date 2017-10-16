@@ -144,9 +144,9 @@
         <br />
         <span style="font-weight: 600">Description: </span>@attachment.Description
         <br />
-        @if (User.IsInRole("Admin"))
+        @if (User.IsInRole("Admin") || User.IsInRole("Project Manager") && attachment.Ticket.Project.Users.Any(u => u.Id == ViewBag.UserId) || attachment.AuthorId == ViewBag.UserId)
         {
-            @Html.ActionLink("Edit", "Edit", "Tickets", new { id = attachment.Id }, new { @class = "editText" }) <span>|</span>
+            @*@Html.ActionLink("Edit", "Edit", "Tickets", new { id = attachment.Id }, new { @class = "editText" }) <span>|</span>*@
             @Html.ActionLink("Delete", "AttachmentDelete", "Tickets", new { id = attachment.Id }, new { @class = "editText" })
         }
         <br />
@@ -189,7 +189,7 @@
                         // Permission by Roles Edit/Delete Buttons for Comments
                         if (User.IsInRole("Admin") || User.IsInRole("Project Manager") && comment.Ticket.Project.Users.Any(u => u.Id == ViewBag.UserId) || comment.AuthorId == ViewBag.UserId)
                         {
-                            @Html.ActionLink("Edit", "CommentEdit", "Tickets", new { id = comment.Id }, new { @class = "editText" }) <span>|</span>
+                            @*@Html.ActionLink("Edit", "CommentEdit", "Tickets", new { id = comment.Id }, new { @class = "editText" }) <span>|</span>*@
                             @Html.ActionLink("Delete", "CommentDelete", "Tickets", new { id = comment.Id }, new { @class = "editText" })
                         }
                     }

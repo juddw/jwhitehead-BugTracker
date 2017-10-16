@@ -1,4 +1,25 @@
-﻿#logInButton {
+﻿#LoginWindow {
+    margin: auto;
+    width: 500px;
+    height: auto;
+    background-color: white;
+    border-style: solid;
+    border-color: white;
+    border-width: 5px;
+    border-radius: 15px 0px;
+    margin-top: 60px;
+}
+
+#LoginWindowBanner {
+    background-color: #334959;
+    border-style: none;
+    border-radius: 12px 0px;
+    padding-left: 20px;
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+#logInButton {
     background-color: #334959;
 }
 
@@ -6,3 +27,10 @@
         background-color: #377989;
     }
 
+/* For Login Page */
+.account-pages {
+    background: url("../images/big/img4.jpg") center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+}

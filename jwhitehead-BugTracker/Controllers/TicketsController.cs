@@ -136,11 +136,6 @@ namespace jwhitehead_BugTracker.Controllers
 
                 db.SaveChanges();
 
-                // NOTIFICATION CREATE
-                //@ if (ticketHistory.AuthorId == "Developer")
-                // grab developer's email and send to forgot password
-
-
                 return RedirectToAction("Index");
             }
 
@@ -234,6 +229,15 @@ namespace jwhitehead_BugTracker.Controllers
 
                     db.SaveChanges();
 
+             
+                    // NOTIFICATION CREATE
+                    // find out which Developer is assigned to Ticket.
+                    // grab developer's email and send email - like forgot password
+                    // notify when any history is created on ticket.
+
+
+
+
                     return RedirectToAction("Details", new { id = comment.TicketId });
                 }
             }
@@ -315,6 +319,7 @@ namespace jwhitehead_BugTracker.Controllers
         [Authorize]
         public ActionResult AttachmentDelete(int? id)
         {
+            var user = db.Users.Find(User.Identity.GetUserId());
             TicketAttachment attachment = db.TicketAttachments.Find(id);
             if (id == null)
             {
@@ -325,6 +330,32 @@ namespace jwhitehead_BugTracker.Controllers
             {
                 return HttpNotFound();
             }
+
+            if (User.IsInRole("Admin"))
+            {
+                return View(attachment);
+            }
+            else if (User.IsInRole("Project Manager") && !attachment.Ticket.Project.Users.Any(u => u.Id == user.Id))
+            {
+                return View("NotAuthNoTickets");
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            else if (User.IsInRole("Developer") && attachment.Ticket.AssignToUserId != user.Id)
+            {
+                return View("NotAuthNoTickets");
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            else if (User.IsInRole("Submitter") && attachment.Ticket.OwnerUserId != user.Id)
+            {
+                return View("NotAuthNoTickets");
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            else if (user.Roles.Count == 0)
+            {
+                return View("NotAuthNoTickets");
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             return View(attachment);
         }
 
@@ -352,69 +383,46 @@ namespace jwhitehead_BugTracker.Controllers
         }
 
 
-        //// POST: Tickets/Create
-        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        //// more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Create([Bind(Include = "Id,Title,Description,Created,Updated,ProjectId,TicketTypeId,TicketPriorityId,TicketStatusId,OwnerUserId,AssignToUserId")] Ticket ticket)
+        //// GET: TicketComments/Edit/
+        //[Authorize]
+        //public ActionResult CommentEdit(int? id)
         //{
-        //    if (ModelState.IsValid)
+        //    var user = db.Users.Find(User.Identity.GetUserId());
+        //    Ticket ticket = db.Tickets.Find(id);
+    
+        //    if (id == null)
         //    {
-        //        db.Tickets.Add(ticket);
-        //        db.SaveChanges();
-        //        return RedirectToAction("Index");
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         //    }
 
-        //    ViewBag.AssignToUserId = new SelectList(db.Users, "Id", "FirstName", ticket.AssignToUserId);
-        //    ViewBag.OwnerUserId = new SelectList(db.Users, "Id", "FirstName", ticket.OwnerUserId);
-        //    ViewBag.ProjectId = new SelectList(db.Projects, "Id", "Title", ticket.ProjectId);
-        //    ViewBag.TicketPriorityId = new SelectList(db.TicketPriorities, "Id", "Name", ticket.TicketPriorityId);
-        //    ViewBag.TicketStatusId = new SelectList(db.TicketStatuses, "Id", "Name", ticket.TicketStatusId);
+        //    if (ticket == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+
+        //    if (User.IsInRole("Admin"))
+        //    {
+        //        return View(ticket);
+        //    }
+        //    else if (User.IsInRole("Project Manager") && !ticket.Project.Users.Any(u => u.Id == user.Id))
+        //    {
+        //        return View("NotAuthNoTickets");
+        //    }
+        //    else if (User.IsInRole("Developer") && ticket.AssignToUserId != user.Id)
+        //    {
+        //        return View("NotAuthNoTickets");
+        //    }
+        //    else if (User.IsInRole("Submitter") && ticket.OwnerUserId != user.Id)
+        //    {
+        //        return View("NotAuthNoTickets");
+        //    }
+        //    else if (user.Roles.Count == 0)
+        //    {
+        //        return View("NotAuthNoTickets");
+        //    }
+
         //    return View(ticket);
         //}
-
-
-        // GET: TicketComments/Edit/
-        [Authorize]
-        public ActionResult CommentEdit(int? id)
-        {
-            var user = db.Users.Find(User.Identity.GetUserId());
-            Ticket ticket = db.Tickets.Find(id);
-    
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            if (ticket == null)
-            {
-                return HttpNotFound();
-            }
-
-            if (User.IsInRole("Admin"))
-            {
-                return View(ticket);
-            }
-            else if (User.IsInRole("Project Manager") && !ticket.Project.Users.Any(u => u.Id == user.Id))
-            {
-                return View("NotAuthNoTickets");
-            }
-            else if (User.IsInRole("Developer") && ticket.AssignToUserId != user.Id)
-            {
-                return View("NotAuthNoTickets");
-            }
-            else if (User.IsInRole("Submitter") && ticket.OwnerUserId != user.Id)
-            {
-                return View("NotAuthNoTickets");
-            }
-            else if (user.Roles.Count == 0)
-            {
-                return View("NotAuthNoTickets");
-            }
-
-            return View(ticket);
-        }
 
 
         // GET: Tickets/Edit/
