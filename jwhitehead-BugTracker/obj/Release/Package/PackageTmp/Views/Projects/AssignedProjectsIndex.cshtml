@@ -39,6 +39,9 @@
                 <thead>
                     <tr>
                         <th>
+                            @Html.DisplayNameFor(model => model.Created)
+                        </th>
+                        <th>
                             Project Name
                             @*@Html.DisplayNameFor(model => model.Title)*@
                         </th>
@@ -51,9 +54,6 @@
                         <th>
                             Assigned To
                         </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Created)
-                        </th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -62,6 +62,10 @@
                     @foreach (var project in Model)
                     {
                         <tr>
+                            <td>
+                                @Html.ToUserTime(project.Created, ViewBag.UserTimeZone as string, "MM-dd-yyyy, h:mm:ss tt")
+                                @*@Html.DisplayFor(modelItem => project.Created)*@
+                            </td>
                             <td>
                                 @Html.DisplayFor(modelItem => project.Title)
                             </td>
@@ -77,11 +81,6 @@
                                     @user.FullName <br />
                                 }
                             </td>
-                            <td>
-                                @Html.ToUserTime(project.Created, ViewBag.UserTimeZone as string, "MM-dd-yyyy, h:mm:ss tt")
-                                @*@Html.DisplayFor(modelItem => project.Created)*@
-                            </td>
-
                             <td style="display: block;">
                                 @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
                                 {
