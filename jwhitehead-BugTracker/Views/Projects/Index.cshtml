@@ -41,6 +41,9 @@
                 <thead>
                     <tr>
                         <th>
+                            @Html.DisplayNameFor(model => model.Created)
+                        </th>
+                        <th>
                             Project Name
                             @*@Html.DisplayNameFor(model => model.Title)*@
                         </th>
@@ -56,9 +59,6 @@
                         @*<th>
                             Role
                         </th>*@
-                        <th>
-                            @Html.DisplayNameFor(model => model.Created)
-                        </th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -67,27 +67,6 @@
                     @foreach (var project in Model)
                     {
                         <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => project.Title)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => project.Description)
-                            </td>
-                            <td style="text-align: center;">
-                                @project.Tickets.Count
-                            </td>
-                            <td>
-                                @foreach (var user in project.Users)
-                                {
-                                    @user.FullName <br />
-                                }
-                            </td>
-                            @*<td>
-                                @foreach (var role in item.SelectedRoles)
-                                {
-                                    <p>@role</p>
-                                }
-                            </td>*@
                             <td>
                                 @*@Html.DisplayFor(modelItem => item.Created)*@
                                 @Html.ToUserTime(project.Created, ViewBag.UserTimeZone as string, "MM-dd-yyyy, h:mm:ss tt")
@@ -115,7 +94,29 @@
                                     @Html.ActionLink("Create Ticket", "Create", "Tickets", new { id = project.Id }, new { style = "display: block;" })
                                 }
                             </td>
-                        </tr>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => project.Title)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => project.Description)
+                            </td>
+                            <td style="text-align: center;">
+                                @project.Tickets.Count
+                            </td>
+                            <td>
+                                @foreach (var user in project.Users)
+                                {
+                                    @user.FullName <br />
+                                }
+                            </td>
+                            @*<td>
+                                @foreach (var role in item.SelectedRoles)
+                                {
+                                    <p>@role</p>
+                                }
+                            </td>*@
+                       </tr>
 
                     }
                 </tbody>
