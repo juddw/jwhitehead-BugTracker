@@ -105,7 +105,7 @@ namespace jwhitehead_BugTracker.Controllers
             ViewBag.TicketTypeId = new SelectList(db.TicketTypes, "Id", "Name");
             return View();
         }
-       
+
 
         // POST: Tickets/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -206,7 +206,7 @@ namespace jwhitehead_BugTracker.Controllers
         public ActionResult CreateComments([Bind(Include = "Id,Body,TicketId")] TicketComment comment)
         {
             var userId = User.Identity.GetUserId();
-          
+
             if (ModelState.IsValid)
             {
                 if (!String.IsNullOrWhiteSpace(userId))
@@ -215,7 +215,7 @@ namespace jwhitehead_BugTracker.Controllers
                     comment.Created = DateTimeOffset.UtcNow; // added in View/Web.config and CustomHelpers.cs
                     comment.AuthorId = User.Identity.GetUserId();
                     db.TicketComments.Add(comment);
-                   
+
                     var post = db.Tickets.Find(comment.TicketId);
 
                     //Add to Ticket Details Page History that Comment was made.
@@ -229,7 +229,7 @@ namespace jwhitehead_BugTracker.Controllers
 
                     db.SaveChanges();
 
-             
+
                     // NOTIFICATION CREATE
                     // find out which Developer is assigned to Ticket.
                     // grab developer's email and send email - like forgot password
@@ -260,7 +260,7 @@ namespace jwhitehead_BugTracker.Controllers
             {
                 return HttpNotFound();
             }
-         
+
             if (User.IsInRole("Admin"))
             {
                 return View(comments);
@@ -282,7 +282,7 @@ namespace jwhitehead_BugTracker.Controllers
                 return View("NotAuthNoTickets");
                 //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-     
+
             return View(comments);
         }
 
@@ -294,7 +294,7 @@ namespace jwhitehead_BugTracker.Controllers
         public ActionResult CommentDeleteConfirmed(int id)
         {
             TicketComment comment = db.TicketComments.Find(id);
-            
+
             ViewBag.UserTimeZone = db.Users.Find(User.Identity.GetUserId()).TimeZone;
 
             //Add to Ticket Details History that Comment was DELETED.
@@ -308,7 +308,7 @@ namespace jwhitehead_BugTracker.Controllers
             db.TicketComments.Remove(comment); // now remove Comment from Ticket Comments
             db.SaveChanges(); // saved and takes effect.
 
-            return RedirectToAction("Details", "Tickets",  new { id = comment.TicketId });
+            return RedirectToAction("Details", "Tickets", new { id = comment.TicketId });
         }
 
 
@@ -386,7 +386,7 @@ namespace jwhitehead_BugTracker.Controllers
         //{
         //    var user = db.Users.Find(User.Identity.GetUserId());
         //    Ticket ticket = db.Tickets.Find(id);
-    
+
         //    if (id == null)
         //    {
         //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -482,7 +482,7 @@ namespace jwhitehead_BugTracker.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Title,Description,Created,Updated,ProjectId,TicketTypeId,TicketPriorityId,TicketStatusId,OwnerUserId,AssignToUserId")] Ticket ticket)
+        public ActionResult Edit([Bind(Include = "Id,Title,Description,Created,ProjectId,TicketTypeId,TicketPriorityId,TicketStatusId,OwnerUserId,AssignToUserId")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
@@ -494,38 +494,95 @@ namespace jwhitehead_BugTracker.Controllers
                 }
 
                 // Get changed values of ticket and compare with original values.
-                // Send to history.
-                //var newTicket = ticket;
-                //var oldTicket = db.Tickets.AsNoTracking().FirstOrDefault(t => t.Id == ticket.Id);
-               
-                //if (oldTicket.Title != newTicket.Title)
-                //{
-                //    TicketHistory history = new TicketHistory();
-                //    history.TicketId = newTicket.Id;
-                //    history.Property = "TICKET TITLE CHANGED";
-                //    history.OldValue = oldTicket.Title;
-                //    history.NewValue = newTicket.Title;
-                //    history.Created = DateTimeOffset.UtcNow;
-                //    history.AuthorId = newTicket.OwnerUserId;
-                //    db.TicketHistories.Add(history);
-                //    db.SaveChanges();
-                //}
-                //if (oldTicket.Description != newTicket.Title)
-                //{
-                //    TicketHistory history = new TicketHistory();
-                //    history.TicketId = newTicket.Id;
-                //    history.Property = "TICKET TITLE CHANGED";
-                //    history.OldValue = oldTicket.Title;
-                //    history.NewValue = newTicket.Title;
-                //    history.Created = DateTimeOffset.UtcNow;
-                //    history.AuthorId = newTicket.OwnerUserId;
-                //    db.TicketHistories.Add(history);
-                //    db.SaveChanges();
-                //}
+                var newTicket = ticket;
+                var ticketList = db.Tickets.ToList();
+                var oldTicket = ticketList.FirstOrDefault(t => t.Id == ticket.Id);
+                var user = db.Users.Find(User.Identity.GetUserId());
 
+                if (oldTicket.Title != newTicket.Title)
+                {
+                    TicketHistory history = new TicketHistory();
+                    history.TicketId = newTicket.Id;
+                    history.Property = "TICKET EDITED";
+                    history.OldValue = oldTicket.Title;
+                    history.NewValue = newTicket.Title;
+                    history.Created = DateTimeOffset.UtcNow;
+                    history.AuthorId = user.Id;
+                    db.TicketHistories.Add(history);
+                }
+                if (oldTicket.Description != newTicket.Description)
+                {
+                    TicketHistory history = new TicketHistory();
+                    history.TicketId = newTicket.Id;
+                    history.Property = "TICKET EDITED";
+                    history.OldValue = oldTicket.Description;
+                    history.NewValue = newTicket.Description;
+                    history.Created = DateTimeOffset.UtcNow;
+                    history.AuthorId = user.Id;
+                    db.TicketHistories.Add(history);
+                }
+                // Project Name
+                if (oldTicket.ProjectId != newTicket.ProjectId)
+                {
+                    TicketHistory history = new TicketHistory();
+                    history.TicketId = newTicket.Id;
+                    history.Property = "TICKET EDITED";
+                    history.OldValue = oldTicket.Project.Title;
+                    history.NewValue = db.Projects.Find(newTicket.ProjectId).Title;
+                    history.Created = DateTimeOffset.UtcNow;
+                    history.AuthorId = user.Id;
+                    db.TicketHistories.Add(history);
+                }
+                // Software or Hardware
+                if (oldTicket.TicketType != newTicket.TicketType)
+                {
+                    TicketHistory history = new TicketHistory();
+                    history.TicketId = newTicket.Id;
+                    history.Property = "TICKET EDITED";
+                    history.OldValue = oldTicket.TicketType.Name;
+                    history.NewValue = db.TicketTypes.Find(newTicket.TicketTypeId).Name;
+                    history.Created = DateTimeOffset.UtcNow;
+                    history.AuthorId = user.Id;
+                    db.TicketHistories.Add(history);
+                }
+                // Low, Medium, High, Urgent
+                if (oldTicket.TicketPriorityId != newTicket.TicketPriorityId)
+                {
+                    TicketHistory history = new TicketHistory();
+                    history.TicketId = newTicket.Id;
+                    history.Property = "TICKET EDITED";
+                    history.OldValue = oldTicket.TicketPriority.Name;
+                    history.NewValue = db.TicketPriorities.Find(newTicket.TicketPriorityId).Name;
+                    history.Created = DateTimeOffset.UtcNow;
+                    history.AuthorId = user.Id;
+                    db.TicketHistories.Add(history);
+                }
+                // Unassigned, Assigned, In Progress, Completed
+                if (oldTicket.TicketStatusId != newTicket.TicketStatusId)
+                {
+                    TicketHistory history = new TicketHistory();
+                    history.TicketId = newTicket.Id;
+                    history.Property = "TICKET EDITED";
+                    history.OldValue = oldTicket.TicketStatus.Name;
+                    history.NewValue = db.TicketStatuses.Find(newTicket.TicketStatusId).Name;
+                    history.Created = DateTimeOffset.UtcNow;
+                    history.AuthorId = user.Id;
+                    db.TicketHistories.Add(history);
+                }
+                if (oldTicket.AssignToUserId != newTicket.AssignToUserId)
+                {
+                    TicketHistory history = new TicketHistory();
+                    history.TicketId = newTicket.Id;
+                    history.Property = "TICKET EDITED";
+                    history.OldValue = oldTicket.AssignToUser.FullName; // The var ticketList = db.Tickets.ToList(); var oldTicket = ticketList.FirstOrDefault(t => t.Id == ticket.Id); Allows you to not call the db.
+                    history.NewValue = db.Users.Find(newTicket.AssignToUserId).FullName;
+                    history.Created = DateTimeOffset.UtcNow;
+                    history.AuthorId = user.Id;
+                    db.TicketHistories.Add(history);
+                }
 
-
-
+                ticket.Updated = DateTimeOffset.UtcNow;
+                db.Entry(oldTicket).State = EntityState.Detached; // So instead of using AsNoTracking() what you can do is Find() and then detach it from the context.I believe that this gives you the same result as AsNoTracking() besides the additional overhead of getting the entity tracked.
                 db.Entry(ticket).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");

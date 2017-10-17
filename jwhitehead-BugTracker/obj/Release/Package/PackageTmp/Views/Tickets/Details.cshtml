@@ -268,5 +268,18 @@
             </p>
             <br />
         }
+
+        if (history.Property == "TICKET EDITED")
+        {
+            <p>
+                <span style="color: goldenrod; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
+                <br />
+                @history.Author.FullName edited this ticket:
+            </p>
+            <p>
+                <span>&#34;@history.NewValue&#34;</span>
+            </p>
+            <br />
+        }
     }
 }

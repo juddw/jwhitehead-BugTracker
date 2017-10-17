@@ -72,6 +72,27 @@
                                 @Html.ToUserTime(project.Created, ViewBag.UserTimeZone as string, "MM-dd-yyyy, h:mm:ss tt")
                             </td>
                             <td>
+                                @Html.DisplayFor(modelItem => project.Title)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => project.Description)
+                            </td>
+                            <td style="text-align: center;">
+                                @project.Tickets.Count
+                            </td>
+                            <td>
+                                @foreach (var user in project.Users)
+                                {
+                                    @user.FullName <br />
+                                }
+                            </td>
+                            @*<td>
+                                @foreach (var role in item.SelectedRoles)
+                                {
+                                    <p>@role</p>
+                                }
+                            </td>*@
+                            <td>
                                 @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
                                 {
                                     @Html.ActionLink("Edit", "Edit", new { id = project.Id }, new { style = "display: block;" })
@@ -94,28 +115,6 @@
                                     @Html.ActionLink("Create Ticket", "Create", "Tickets", new { id = project.Id }, new { style = "display: block;" })
                                 }
                             </td>
-
-                            <td>
-                                @Html.DisplayFor(modelItem => project.Title)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => project.Description)
-                            </td>
-                            <td style="text-align: center;">
-                                @project.Tickets.Count
-                            </td>
-                            <td>
-                                @foreach (var user in project.Users)
-                                {
-                                    @user.FullName <br />
-                                }
-                            </td>
-                            @*<td>
-                                @foreach (var role in item.SelectedRoles)
-                                {
-                                    <p>@role</p>
-                                }
-                            </td>*@
                        </tr>
 
                     }
