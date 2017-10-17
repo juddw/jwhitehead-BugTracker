@@ -268,17 +268,14 @@ namespace jwhitehead_BugTracker.Controllers
             else if (User.IsInRole("Project Manager") && !comments.Ticket.Project.Users.Any(u => u.Id == user.Id))
             {
                 return View("NotAuthNoTickets");
-                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            else if (User.IsInRole("Developer") && comments.Ticket.AssignToUserId != user.Id)
+            else if (User.IsInRole("Developer") && comments.AuthorId != user.Id)  // check for Developer owning the comment.
             {
                 return View("NotAuthNoTickets");
-                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            else if (User.IsInRole("Submitter") && comments.Ticket.OwnerUserId != user.Id)
+            else if (User.IsInRole("Submitter") && comments.AuthorId != user.Id)  // check for Submitter owning the comment.
             {
                 return View("NotAuthNoTickets");
-                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             else if (user.Roles.Count == 0)
             {
@@ -340,12 +337,12 @@ namespace jwhitehead_BugTracker.Controllers
                 return View("NotAuthNoTickets");
                 //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            else if (User.IsInRole("Developer") && attachment.Ticket.AssignToUserId != user.Id)
+            else if (User.IsInRole("Developer") && attachment.AuthorId != user.Id)  // check for Developer owning the ticket.
             {
                 return View("NotAuthNoTickets");
                 //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            else if (User.IsInRole("Submitter") && attachment.Ticket.OwnerUserId != user.Id)
+            else if (User.IsInRole("Submitter") && attachment.AuthorId != user.Id)  // check for Submitter owning the ticket.
             {
                 return View("NotAuthNoTickets");
                 //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -495,6 +492,39 @@ namespace jwhitehead_BugTracker.Controllers
                                                                                  // it points to the Primary Key TicketStatus.Id
                     ticket.TicketStatusId = db.TicketStatuses.FirstOrDefault(t => t.Name == "Assigned").Id; // change unassigned to assigned when assigning user to ticket.
                 }
+
+                // Get changed values of ticket and compare with original values.
+                // Send to history.
+                //var newTicket = ticket;
+                //var oldTicket = db.Tickets.AsNoTracking().FirstOrDefault(t => t.Id == ticket.Id);
+               
+                //if (oldTicket.Title != newTicket.Title)
+                //{
+                //    TicketHistory history = new TicketHistory();
+                //    history.TicketId = newTicket.Id;
+                //    history.Property = "TICKET TITLE CHANGED";
+                //    history.OldValue = oldTicket.Title;
+                //    history.NewValue = newTicket.Title;
+                //    history.Created = DateTimeOffset.UtcNow;
+                //    history.AuthorId = newTicket.OwnerUserId;
+                //    db.TicketHistories.Add(history);
+                //    db.SaveChanges();
+                //}
+                //if (oldTicket.Description != newTicket.Title)
+                //{
+                //    TicketHistory history = new TicketHistory();
+                //    history.TicketId = newTicket.Id;
+                //    history.Property = "TICKET TITLE CHANGED";
+                //    history.OldValue = oldTicket.Title;
+                //    history.NewValue = newTicket.Title;
+                //    history.Created = DateTimeOffset.UtcNow;
+                //    history.AuthorId = newTicket.OwnerUserId;
+                //    db.TicketHistories.Add(history);
+                //    db.SaveChanges();
+                //}
+
+
+
 
                 db.Entry(ticket).State = EntityState.Modified;
                 db.SaveChanges();
