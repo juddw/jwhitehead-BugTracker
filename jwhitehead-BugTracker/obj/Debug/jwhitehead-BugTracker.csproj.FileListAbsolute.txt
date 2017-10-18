@@ -1,3 +1,4 @@
+C:\Users\Judd Whitehead\Documents\Visual Studio 2017\Projects\jwhitehead-BugTracker\jwhitehead-BugTracker\obj\Debug\jwhitehead-BugTracker.csproj.CoreCompileInputs.cache
 C:\Users\Judd Whitehead\Documents\Visual Studio 2017\Projects\jwhitehead-BugTracker\jwhitehead-BugTracker\bin\ApplicationInsights.config
 C:\Users\Judd Whitehead\Documents\Visual Studio 2017\Projects\jwhitehead-BugTracker\jwhitehead-BugTracker\bin\roslyn\csc.exe
 C:\Users\Judd Whitehead\Documents\Visual Studio 2017\Projects\jwhitehead-BugTracker\jwhitehead-BugTracker\bin\roslyn\csc.exe.config
@@ -113,7 +114,6 @@ C:\Users\Judd Whitehead\Documents\Visual Studio 2017\Projects\jwhitehead-BugTrac
 C:\Users\Judd Whitehead\Documents\Visual Studio 2017\Projects\jwhitehead-BugTracker\jwhitehead-BugTracker\bin\Microsoft.AI.ServerTelemetryChannel.xml
 C:\Users\Judd Whitehead\Documents\Visual Studio 2017\Projects\jwhitehead-BugTracker\jwhitehead-BugTracker\bin\Microsoft.AI.WindowsServer.xml
 C:\Users\Judd Whitehead\Documents\Visual Studio 2017\Projects\jwhitehead-BugTracker\jwhitehead-BugTracker\bin\Microsoft.AI.Web.xml
-C:\Users\Judd Whitehead\Documents\Visual Studio 2017\Projects\jwhitehead-BugTracker\jwhitehead-BugTracker\obj\Debug\jwhitehead-BugTracker.csproj.CoreCompileInputs.cache
 C:\Users\Judd Whitehead\Documents\Visual Studio 2017\Projects\jwhitehead-BugTracker\jwhitehead-BugTracker\obj\Debug\jwhitehead-BugTracker.dll
 C:\Users\Judd Whitehead\Documents\Visual Studio 2017\Projects\jwhitehead-BugTracker\jwhitehead-BugTracker\obj\Debug\jwhitehead-BugTracker.pdb
 C:\Users\Judd Whitehead\Documents\Visual Studio 2017\Projects\jwhitehead-BugTracker\jwhitehead-BugTracker\obj\Debug\jwhitehead-BugTracker.csprojResolveAssemblyReference.cache

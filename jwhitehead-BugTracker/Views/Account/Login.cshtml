@@ -37,15 +37,16 @@
                     <div class="form-group">
                         @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
                         <div class="col-md-10">
-                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-                            <i class="fa fa-address-book"></i>
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", style = "display: inline;" }) @*jw added*@
+                            <i class="fa fa-envelope-o"; style="font-size: 25px; vertical-align: middle; color: dimgrey"></i>
                             @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
                         </div>
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
                         <div class="col-md-10">
-                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", style="display: inline;"}) <i class="fa fa-lock"; font-size: 30px;"></i>
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", style="display: inline;"}) @*jw added*@
+                            <i class="fa fa-lock"; style="font-size: 25px;  vertical-align: middle; color: dimgrey;"></i>
                             @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                         </div>
                     </div>
@@ -59,7 +60,7 @@
                     </div>
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            <input type="submit" value="Log in" class="btn btn-primary" id="logInButton" />
+                            <input type="submit" value="Log in" class="btn btn-primary" id="logInButton" style="width: 80%; text-align: center;"/>
                         </div>
                     </div>
                 }
@@ -82,7 +83,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group text-center m-t-20">
+                        <div class="form-group">
                             <div class="col-xs-12">
                                 <button class="btn btn-primary btn-block" type="submit">Administrator Demo</button>
                             </div>
@@ -106,7 +107,7 @@
                             </div>
                         </div>
                     </div>
-                        <div class="form-group text-center m-t-20">
+                        <div class="form-group">
                             <div class="col-xs-12">
                                 <button class="btn btn-primary btn-block" type="submit">Project Manager Demo</button>
                             </div>
@@ -130,7 +131,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group text-center m-t-20">
+                    <div class="form-group">
                         <div class="col-xs-12">
                             <button class="btn btn-primary btn-block" type="submit">Developer Demo</button>
                         </div>
@@ -154,7 +155,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group text-center m-t-20">
+                    <div class="form-group">
                         <div class="col-xs-12">
                             <button class="btn btn-primary btn-block" type="submit">Submitter Demo</button>
                         </div>
@@ -162,17 +163,18 @@
                 }
 
 
-                <p>
-                    @Html.ActionLink("Register as a new user", "Register")
+                <p style="text-align: center;">
+                    <a href="@Url.Action("Register", "Account")" class="btn btn-warning btn-block" style="text-align: center;">Register as a new user</a>
                 </p>
                 @* Enable this once you have account confirmation enabled for password reset functionality*@
-                <p>
-                    @Html.ActionLink("Forgot your password?", "ForgotPassword")
+                <p style="text-align: center;">
+                    @*@Html.ActionLink("Forgot your password?", "ForgotPassword")*@
+                    <a href="@Url.Action("ForgotPassword", "Account")" class="btn btn-warning btn-block" style="text-align: center; margin-top: -5px;">Forgot your password?</a>
                 </p>
 
                 <hr style="border-color: #808080;" />
                 <footer>
-                    <p>&copy; @DateTime.Now.Year - Judd Whitehead</p>
+                    <p style="text-align: center;">&copy; @DateTime.Now.Year - Judd Whitehead</p>
                 </footer>
 
             </section>

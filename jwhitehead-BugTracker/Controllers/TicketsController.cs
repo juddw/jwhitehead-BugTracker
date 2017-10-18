@@ -11,12 +11,29 @@ using jwhitehead_BugTracker.Models.CodeFirst;
 using Microsoft.AspNet.Identity;
 using System.IO;
 using jwhitehead_BugTracker.Models.Helpers;
+using System.Threading.Tasks;
+using System.Net.Mail;
+using System.Configuration;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace jwhitehead_BugTracker.Controllers
 {
     [Authorize]
     public class TicketsController : Universal
     {
+        private ApplicationUserManager _userManager;
+
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+            private set
+            {
+                _userManager = value;
+            }
+        }
 
         // GET: Tickets
         [Authorize]
@@ -113,10 +130,11 @@ namespace jwhitehead_BugTracker.Controllers
         [HttpPost]
         [Authorize(Roles = "Submitter")]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Title,Description,Created,Updated,ProjectId,TicketTypeId,TicketPriorityId")] Ticket ticket)
+        public async Task<ActionResult> Create([Bind(Include = "Id,Title,Description,Created,Updated,ProjectId,TicketTypeId,TicketPriorityId")] Ticket ticket)
         {
             var user = db.Users.Find(User.Identity.GetUserId());
             TicketHistory ticketHistory = new TicketHistory();
+            UserRoleHelper helper = new UserRoleHelper();
 
             if (ModelState.IsValid)
             {
@@ -135,6 +153,21 @@ namespace jwhitehead_BugTracker.Controllers
                 db.TicketHistories.Add(ticketHistory);
 
                 db.SaveChanges();
+
+                // NOTIFICATION CREATE - Notify Project Manager on project that ticket was created since Submitters
+                // are the only one who can create a ticket, but they cannot assign user to tickets.
+                // This comes after db.SaveChanges.
+
+                var proj = db.Projects.Find(ticket.ProjectId);
+                foreach (var person in proj.Users)
+                {
+                    if (helper.IsUserInRole(person.Id, "Project Manager"))
+                    {
+                        // CODE FOR EMAIL NOTIFICATON
+                        var callbackUrl = Url.Action("Details", "Tickets", new { id = ticket.Id }, protocol: Request.Url.Scheme);
+                        await UserManager.SendEmailAsync(person.Id, "NEW Ticket!", "A new ticket has been created for Project: " + proj.Title + "!<br/><br/>  Please click <a href=\"" + callbackUrl + "\">here</a> to view it.");
+                    }
+                }
 
                 return RedirectToAction("Index");
             }
@@ -228,15 +261,6 @@ namespace jwhitehead_BugTracker.Controllers
                     db.TicketHistories.Add(ticketHistory);
 
                     db.SaveChanges();
-
-
-                    // NOTIFICATION CREATE
-                    // find out which Developer is assigned to Ticket.
-                    // grab developer's email and send email - like forgot password
-                    // notify when any history is created on ticket.
-
-
-
 
                     return RedirectToAction("Details", new { id = comment.TicketId });
                 }
@@ -482,7 +506,7 @@ namespace jwhitehead_BugTracker.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Title,Description,Created,ProjectId,TicketTypeId,TicketPriorityId,TicketStatusId,OwnerUserId,AssignToUserId")] Ticket ticket)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Title,Description,Created,ProjectId,TicketTypeId,TicketPriorityId,TicketStatusId,OwnerUserId,AssignToUserId")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
@@ -574,7 +598,10 @@ namespace jwhitehead_BugTracker.Controllers
                     TicketHistory history = new TicketHistory();
                     history.TicketId = newTicket.Id;
                     history.Property = "TICKET EDITED";
-                    history.OldValue = oldTicket.AssignToUser.FullName; // The var ticketList = db.Tickets.ToList(); var oldTicket = ticketList.FirstOrDefault(t => t.Id == ticket.Id); Allows you to not call the db.
+                    if (oldTicket.AssignToUserId != null)
+                    {
+                        history.OldValue = oldTicket.AssignToUser.FullName; // The var ticketList = db.Tickets.ToList(); var oldTicket = ticketList.FirstOrDefault(t => t.Id == ticket.Id); Allows you to not call the db.
+                    }
                     history.NewValue = db.Users.Find(newTicket.AssignToUserId).FullName;
                     history.Created = DateTimeOffset.UtcNow;
                     history.AuthorId = user.Id;
@@ -585,6 +612,22 @@ namespace jwhitehead_BugTracker.Controllers
                 db.Entry(oldTicket).State = EntityState.Detached; // So instead of using AsNoTracking() what you can do is Find() and then detach it from the context.I believe that this gives you the same result as AsNoTracking() besides the additional overhead of getting the entity tracked.
                 db.Entry(ticket).State = EntityState.Modified;
                 db.SaveChanges();
+
+
+                // NOTIFICATION EDIT - Notify Developer on ticket that ticket was edited.
+                // This comes after db.SaveChanges.
+                UserRoleHelper helper = new UserRoleHelper();
+                var proj = db.Projects.Find(ticket.ProjectId);
+                foreach (var person in proj.Users)
+                {
+                    if (helper.IsUserInRole(person.Id, "Developer"))
+                    {
+                        // CODE FOR EMAIL NOTIFICATON
+                        var callbackUrl = Url.Action("Details", "Tickets", new { id = ticket.Id }, protocol: Request.Url.Scheme);
+                        await UserManager.SendEmailAsync(person.Id, "Ticket Edited!", "A ticket has been edited for Project: " + proj.Title + "!<br/><br/>  Please click <a href=\"" + callbackUrl + "\">here</a> to view it.");
+                    }
+                }
+
                 return RedirectToAction("Index");
             }
             ViewBag.AssignToUserId = new SelectList(db.Users, "Id", "FirstName", ticket.AssignToUserId);
@@ -625,6 +668,38 @@ namespace jwhitehead_BugTracker.Controllers
         //    db.SaveChanges();
         //    return RedirectToAction("Index");
         //}
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Contact(EmailModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var from = "MyBugTracker<juddwhitehead@gmail.com>";
+                    var subject = "Bug Tracker Status Update Email: " + model.Subject;
+
+                    var email = new MailMessage(from, model.EmailTo)
+                    {
+                        Subject = subject,
+                        Body = model.Body,
+                        IsBodyHtml = true
+                    };
+
+                    //var svc = new PersonalEmail();
+                    //await svc.SendAsync(email);
+                    return RedirectToAction("Sent");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    await Task.FromResult(0);
+                }
+            }
+            return View(model);
+        }
 
 
         protected override void Dispose(bool disposing)

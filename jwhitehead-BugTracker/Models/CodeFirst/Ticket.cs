@@ -19,7 +19,7 @@ namespace jwhitehead_BugTracker.Models.CodeFirst
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTimeOffset Created { get; set; }
-        public DateTimeOffset? Updated { get; set; } // not sure why the ?
+        public DateTimeOffset? Updated { get; set; } // ? allow updated to be null, because when Ticket is created, it will not have an Updated Time.
         public int ProjectId { get; set; }
         public int TicketTypeId { get; set; }
         public int TicketPriorityId { get; set; }
