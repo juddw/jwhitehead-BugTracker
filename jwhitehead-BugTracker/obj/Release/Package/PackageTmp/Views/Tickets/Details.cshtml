@@ -216,6 +216,22 @@
             </p>
             <br />
         }
+        
+        if (history.Property == "TICKET EDITED")
+        {
+            <p>
+                <span style="color: goldenrod; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
+                <br />
+                @*How do I get the current User's Name?*@
+                @history.Author.FullName edited ticket &#34;@Model.Title&#34;
+            </p>
+            <p>
+                <span>&#34;@history.OldValue&#34; was changed to:
+                <br />
+                &#34;@history.NewValue&#34;</span>
+            </p>
+            <br />
+        }
 
         if (history.Property == "NEW TICKET ATTACHMENT")
         {
@@ -269,17 +285,5 @@
             <br />
         }
 
-        if (history.Property == "TICKET EDITED")
-        {
-            <p>
-                <span style="color: goldenrod; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
-                <br />
-                @history.Author.FullName edited this ticket:
-            </p>
-            <p>
-                <span>&#34;@history.NewValue&#34;</span>
-            </p>
-            <br />
-        }
     }
 }

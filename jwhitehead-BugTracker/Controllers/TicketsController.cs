@@ -201,7 +201,7 @@ namespace jwhitehead_BugTracker.Controllers
 
             if (ModelState.IsValid)
             {
-                var filePath = "/Uploads/"; // url path
+                var filePath = "assets/User-uploads/"; // url path
                 var absPath = Server.MapPath("~" + filePath);  // physical file path
                 item.FileUrl = filePath + image.FileName; // path of the file
                 image.SaveAs(Path.Combine(absPath, image.FileName)); // saves
@@ -522,6 +522,8 @@ namespace jwhitehead_BugTracker.Controllers
                 var ticketList = db.Tickets.ToList();
                 var oldTicket = ticketList.FirstOrDefault(t => t.Id == ticket.Id);
                 var user = db.Users.Find(User.Identity.GetUserId());
+                string changeMade = "0";
+                string msg = "";
 
                 if (oldTicket.Title != newTicket.Title)
                 {
@@ -532,6 +534,8 @@ namespace jwhitehead_BugTracker.Controllers
                     history.NewValue = newTicket.Title;
                     history.Created = DateTimeOffset.UtcNow;
                     history.AuthorId = user.Id;
+                    changeMade = "1";
+                    msg = "The title has been changed from: " + "\"" + history.OldValue + "\"" + " to " + "\"" + history.NewValue + "\"" + "<br /><br />"; 
                     db.TicketHistories.Add(history);
                 }
                 if (oldTicket.Description != newTicket.Description)
@@ -543,6 +547,8 @@ namespace jwhitehead_BugTracker.Controllers
                     history.NewValue = newTicket.Description;
                     history.Created = DateTimeOffset.UtcNow;
                     history.AuthorId = user.Id;
+                    changeMade = "1";
+                    msg += "The description has been changed from: " + "\"" + history.OldValue + "\"" + " to " + "\"" + history.NewValue + "\"" + "<br /><br />";
                     db.TicketHistories.Add(history);
                 }
                 // Project Name
@@ -555,10 +561,12 @@ namespace jwhitehead_BugTracker.Controllers
                     history.NewValue = db.Projects.Find(newTicket.ProjectId).Title;
                     history.Created = DateTimeOffset.UtcNow;
                     history.AuthorId = user.Id;
+                    changeMade = "1";
+                    msg += "The project name has been changed from: " + "\"" + history.OldValue + "\"" + " to " + "\"" + history.NewValue + "\"" + "<br /><br />";
                     db.TicketHistories.Add(history);
                 }
                 // Software or Hardware
-                if (oldTicket.TicketType != newTicket.TicketType)
+                if (oldTicket.TicketTypeId != newTicket.TicketTypeId)
                 {
                     TicketHistory history = new TicketHistory();
                     history.TicketId = newTicket.Id;
@@ -567,6 +575,8 @@ namespace jwhitehead_BugTracker.Controllers
                     history.NewValue = db.TicketTypes.Find(newTicket.TicketTypeId).Name;
                     history.Created = DateTimeOffset.UtcNow;
                     history.AuthorId = user.Id;
+                    changeMade = "1";
+                    msg += "The ticket type has been changed from: " + "\"" + history.OldValue + "\"" + " to " + "\"" + history.NewValue + "\"" + "<br /><br />";
                     db.TicketHistories.Add(history);
                 }
                 // Low, Medium, High, Urgent
@@ -579,6 +589,8 @@ namespace jwhitehead_BugTracker.Controllers
                     history.NewValue = db.TicketPriorities.Find(newTicket.TicketPriorityId).Name;
                     history.Created = DateTimeOffset.UtcNow;
                     history.AuthorId = user.Id;
+                    changeMade = "1";
+                    msg += "The priority has been changed from: " + "\"" + history.OldValue + "\"" + " to " + "\"" + history.NewValue + "\"" + "<br /><br />";
                     db.TicketHistories.Add(history);
                 }
                 // Unassigned, Assigned, In Progress, Completed
@@ -591,6 +603,8 @@ namespace jwhitehead_BugTracker.Controllers
                     history.NewValue = db.TicketStatuses.Find(newTicket.TicketStatusId).Name;
                     history.Created = DateTimeOffset.UtcNow;
                     history.AuthorId = user.Id;
+                    changeMade = "1";
+                    msg += "The ticket status has been changed from: " + "\"" + history.OldValue + "\"" + " to " + "\"" + history.NewValue + "\"" + "<br /><br />";
                     db.TicketHistories.Add(history);
                 }
                 if (oldTicket.AssignToUserId != newTicket.AssignToUserId)
@@ -605,6 +619,8 @@ namespace jwhitehead_BugTracker.Controllers
                     history.NewValue = db.Users.Find(newTicket.AssignToUserId).FullName;
                     history.Created = DateTimeOffset.UtcNow;
                     history.AuthorId = user.Id;
+                    changeMade = "1";
+                    msg += "The assigned user has been changed from: " + "\"" + history.OldValue + "\"" + " to " + "\"" + history.NewValue + "\"" + "<br /><br />";
                     db.TicketHistories.Add(history);
                 }
 
@@ -616,15 +632,16 @@ namespace jwhitehead_BugTracker.Controllers
 
                 // NOTIFICATION EDIT - Notify Developer on ticket that ticket was edited.
                 // This comes after db.SaveChanges.
+                // This should only send email if something changes and Developer is on ticket.
                 UserRoleHelper helper = new UserRoleHelper();
                 var proj = db.Projects.Find(ticket.ProjectId);
                 foreach (var person in proj.Users)
                 {
-                    if (helper.IsUserInRole(person.Id, "Developer"))
+                    if (helper.IsUserInRole(person.Id, "Developer") && changeMade == "1")
                     {
                         // CODE FOR EMAIL NOTIFICATON
                         var callbackUrl = Url.Action("Details", "Tickets", new { id = ticket.Id }, protocol: Request.Url.Scheme);
-                        await UserManager.SendEmailAsync(person.Id, "Ticket Edited!", "A ticket has been edited for Project: " + proj.Title + "!<br/><br/>  Please click <a href=\"" + callbackUrl + "\">here</a> to view it.");
+                        await UserManager.SendEmailAsync(person.Id, "Ticket Edited!", "A ticket has been edited for a project you are assigned to: " + proj.Title + "!<br/><br/>  Please click <a href=\"" + callbackUrl + "\">here</a> to view it." + "<br/><br/>" + "A summary of the changes is below:<br/><br/>" + msg);
                     }
                 }
 

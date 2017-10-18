@@ -22,14 +22,23 @@
             <div class="col-md-10" style="margin-top: 7px;">
                 @Html.ToUserTime(Model.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
                 @*@Html.EditorFor(model => model.Created.UtcDateTime, new { htmlAttributes = new { @class = "form-control" } })*@
-                @Html.ValidationMessageFor(model => model.Created, "", new { @class = "text-danger" })
+                @*@Html.ValidationMessageFor(model => model.Created, "", new { @class = "text-danger" })*@
+                @Html.HiddenFor(model => model.Created)
             </div>
         </div>
 
         <div class="form-group">
             @Html.LabelFor(model => model.Updated, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10" style="margin-top: 7px;">
-                @Html.EditorFor(model => model.Updated, new { htmlAttributes = new { @class = "form-control" } })
+                @if (Model.Updated == null)
+                {
+                    <p>This file has not been updated yet.</p>
+                }
+                else
+                {
+                    @Html.ToUserTime(Model.Updated.Value, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
+                }
+                @*@Html.EditorFor(model => model.Updated, new { htmlAttributes = new { @class = "form-control" } })*@
                 @Html.ValidationMessageFor(model => model.Updated, "", new { @class = "text-danger" })
             </div>
         </div>

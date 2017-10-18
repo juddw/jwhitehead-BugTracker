@@ -140,6 +140,7 @@ namespace jwhitehead_BugTracker.Controllers
         {
             if (ModelState.IsValid)
             {
+                project.Updated = DateTimeOffset.UtcNow;
                 db.Entry(project).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("AssignedProjectsIndex");
