@@ -32,9 +32,9 @@ namespace jwhitehead_BugTracker.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -218,6 +218,20 @@ namespace jwhitehead_BugTracker.Controllers
         // GET: /Manage/ChangePassword
         public ActionResult ChangePassword()
         {
+            var user = UserManager.FindById(User.Identity.GetUserId());
+
+            if (user.UserName == "admin@coderfoundry.com" || user.UserName == "projectmanager@coderfoundry.com"
+               || user.UserName == "developer@coderfoundry.com" || user.UserName == "submitter@coderfoundry.com")
+            {
+                return RedirectToAction("ChangePasswordNotAuthorized", "Manage");
+            }
+
+            return View();
+        }
+
+        // GET: /Manage/ChangePasswordNotAuthorized
+        public ActionResult ChangePasswordNotAuthorized()
+        {
             return View();
         }
 
@@ -327,10 +341,24 @@ namespace jwhitehead_BugTracker.Controllers
         public ActionResult ChangeName()
         {
             var user = UserManager.FindById(User.Identity.GetUserId());
+
+            if (user.UserName == "admin@coderfoundry.com" || user.UserName == "projectmanager@coderfoundry.com"
+                || user.UserName == "developer@coderfoundry.com" || user.UserName == "submitter@coderfoundry.com")
+            {
+                return RedirectToAction("ChangeNameNotAuthorized", "Manage");
+            }
+
             ChangeNameViewModel model = new ChangeNameViewModel();
             model.NewName = user.FirstName;
             return View(model);
         }
+
+        // GET: /Manage/ChangeNameNotAuthorized
+        public ActionResult ChangeNameNotAuthorized()
+        {
+            return View();
+        }
+
         // POST: /Manage/ChangeName
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -348,7 +376,6 @@ namespace jwhitehead_BugTracker.Controllers
                 if (user != null)
                 {
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-
                 }
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangeNameSuccess });
             }
@@ -367,7 +394,7 @@ namespace jwhitehead_BugTracker.Controllers
             base.Dispose(disposing);
         }
 
-#region Helpers
+        #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 
@@ -419,6 +446,6 @@ namespace jwhitehead_BugTracker.Controllers
             ChangeNameSuccess
         }
 
-#endregion
+        #endregion
     }
 }

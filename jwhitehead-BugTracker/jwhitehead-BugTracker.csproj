@@ -1936,6 +1936,9 @@
     <Content Include="Views\Tickets\NotAuthNoTickets.cshtml" />
     <Content Include="Views\Tickets\CommentDelete.cshtml" />
     <Content Include="Views\Tickets\AttachmentDelete.cshtml" />
+    <Content Include="Views\Shared\_AccountLayout.cshtml" />
+    <Content Include="Views\Manage\ChangePasswordNotAuthorized.cshtml" />
+    <Content Include="Views\Manage\ChangeNameNotAuthorized.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

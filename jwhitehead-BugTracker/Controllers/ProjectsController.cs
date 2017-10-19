@@ -189,7 +189,7 @@ namespace jwhitehead_BugTracker.Controllers
             projectuserVM.AssignProjectId = id; // where is the AssignProject assigned
             projectuserVM.SelectedUsers = project.Users.Select(u => u.Id).ToArray();
             // can call fullname if prefer.
-            projectuserVM.Users = new MultiSelectList(db.Users.ToList(), "Id", "FirstName", projectuserVM.SelectedUsers);
+            projectuserVM.Users = new MultiSelectList(db.Users.ToList(), "Id", "FullName", projectuserVM.SelectedUsers);
             return View(projectuserVM);
         }
 
