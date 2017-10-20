@@ -1,8 +1,17 @@
 ﻿@{
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
     ViewBag.Title = "Login Failure";
 }
 
-<hgroup>
-    <h2>@ViewBag.Title.</h2>
-    <h3 class="text-danger">Unsuccessful login with service.</h3>
-</hgroup>
+<div id="LoginWindowBanner">
+    <h2 style="color: white; font-weight: 500;">@ViewBag.Title.</h2>
+</div>
+
+<div id="loginForm" style="padding: 20px;">
+    <p class="text-danger">
+        Unsuccessful login with service.
+    </p>
+    <div style="text-align: center;">
+        <a href="@Url.Action("Login","Account")" class="btn btn-primary" style="margin-top: 30px;">Back to Login</a>
+    </div>
+</div>

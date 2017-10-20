@@ -10,7 +10,7 @@
         </section>
     </div>*@
 <div id="LoginWindowBanner">
-    <h2 style="color: white; font-weight: 500;">Log in.</h2>
+    <h2 style="font-family: 'Rancho', cursive; color: white; font-weight: 500;">Bug Tracker Log in.</h2>
     <h4 style="color: white; font-weight: 300; ">Use a local account to log in.</h4>
 </div>
 
@@ -36,31 +36,30 @@
                 @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
             </div>
         </div>
-            @*<div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <div class="checkbox">
-                            @Html.CheckBoxFor(m => m.RememberMe)
-                            @Html.LabelFor(m => m.RememberMe)
-                        </div>
+        @*<div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <div class="checkbox">
+                        @Html.CheckBoxFor(m => m.RememberMe)
+                        @Html.LabelFor(m => m.RememberMe)
                     </div>
-                </div>*@
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Log in" class="btn btn-primary" id="logInButton" style="width: 80%; margin-top: 20px;" />
                 </div>
+            </div>*@
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Log in" class="btn btn-primary" id="logInButton" style="width: 80%; margin-top: 20px;" />
             </div>
-            @*@Html.ActionLink("Forgot your password?", "ForgotPassword")*@
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <a href="@Url.Action("ForgotPassword", "Account")" class="btn btn-info" style="width: 280px;  margin-top: -7px;">Forgot your password?</a>
-                </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                @Html.ActionLink("Forgot your password?", "ForgotPassword", null, new { style = "margin-left: 65px;" })
+                @*<a href="@Url.Action("ForgotPassword", "Account")" class="btn btn-info" style="width: 280px;  margin-top: -7px;">Forgot your password?</a>*@
             </div>
+        </div>
     }
 
-    @*ADD DEMO BUTTONS
-        Admin Demo*@
+    @*ADD DEMO BUTTONS Admin Demo*@
     @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-            {
+     {
         @Html.AntiForgeryToken()
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
@@ -68,42 +67,42 @@
                 <input name="Email" value="admin@coderfoundry.com" hidden />
             </div>
         </div>
-                <div class="form-group">
-                    <div class="col-xs-12">
-                        <div class="col-xs-12">
-                            <input name="Password" value="DemoPassword1!" hidden />
-                        </div>
-                    </div>
+        <div class="form-group">
+            <div class="col-xs-12">
+                <div class="col-xs-12">
+                    <input name="Password" value="DemoPassword1!" hidden />
                 </div>
-                <div class="form-group">
-                    <div class="col-xs-12">
-                        <button class="btn btn-primary btn-block" type="submit">Administrator Demo</button>
-                    </div>
-                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button class="btn btn-primary" style="width: 280px;" type="submit">Administrator Demo</button>
+            </div>
+        </div>
     }
 
     @*Project Manager Demo*@
     @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-            {
+     {
         @Html.AntiForgeryToken()
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group" style="margin-top: -40px;">
+        <div class="form-group">
             <div class="col-xs-12">
                 <input name="Email" value="projectmanager@coderfoundry.com" hidden />
             </div>
         </div>
-                <div class="form-group">
-                    <div class="col-xs-12">
-                        <div class="col-xs-12">
-                            <input name="Password" value="DemoPassword1!" hidden />
-                        </div>
-                    </div>
+        <div class="form-group">
+            <div class="col-xs-12">
+                <div class="col-xs-12">
+                    <input name="Password" value="DemoPassword1!" hidden />
                 </div>
-                <div class="form-group">
-                    <div class="col-xs-12">
-                        <button class="btn btn-primary btn-block" type="submit">Project Manager Demo</button>
-                    </div>
-                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10" style="margin-top: -40px;">
+                <button class="btn btn-primary" style="width: 280px;" type="submit">Project Manager Demo</button>
+            </div>
+        </div>
     }
 
     @*Developer Demo*@
@@ -111,23 +110,23 @@
             {
         @Html.AntiForgeryToken()
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group" style="margin-top: -40px;">
+        <div class="form-group">
             <div class="col-xs-12">
                 <input name="Email" value="developer@coderfoundry.com" hidden />
             </div>
         </div>
-                <div class="form-group">
-                    <div class="col-xs-12">
-                        <div class="col-xs-12">
-                            <input name="Password" value="DemoPassword1!" hidden />
-                        </div>
-                    </div>
+        <div class="form-group">
+            <div class="col-xs-12">
+                <div class="col-xs-12">
+                    <input name="Password" value="DemoPassword1!" hidden />
                 </div>
-                <div class="form-group">
-                    <div class="col-xs-12">
-                        <button class="btn btn-primary btn-block" type="submit">Developer Demo</button>
-                    </div>
-                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10" style="margin-top: -45px;">
+                <button class="btn btn-primary" style="width: 280px;" type="submit">Developer Demo</button>
+            </div>
+        </div>
     }
 
     @*Submitter Demo*@
@@ -135,28 +134,28 @@
             {
         @Html.AntiForgeryToken()
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group" style="margin-top: -40px;">
+        <div class="form-group">
             <div class="col-xs-12">
                 <input name="Email" value="submitter@coderfoundry.com" hidden />
             </div>
         </div>
-                <div class="form-group">
-                    <div class="col-xs-12">
-                        <div class="col-xs-12">
-                            <input name="Password" value="DemoPassword1!" hidden />
-                        </div>
-                    </div>
+        <div class="form-group">
+            <div class="col-xs-12">
+                <div class="col-xs-12">
+                    <input name="Password" value="DemoPassword1!" hidden />
                 </div>
-                <div class="form-group">
-                    <div class="col-xs-12">
-                        <button class="btn btn-primary btn-block" type="submit">Submitter Demo</button>
-                    </div>
-                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10" style="margin-top: -50px;">
+                <button class="btn btn-primary" style="width: 280px;" type="submit">Submitter Demo</button>
+            </div>
+        </div>
     }
 
 
-    <p style="text-align: center;">
-        <a href="@Url.Action("Register", "Account")" class="btn btn-warning btn-block" style="text-align: center; margin-top: 50px;">Register as a new user</a>
+    <p class="col-md-offset-2 col-md-10">
+        <a href="@Url.Action("Register", "Account")" class="btn btn-warning" style="width: 280px; margin-left: -15px; margin-top: -7px;">Register as a new user</a>
     </p>
     @* Enable this once you have account confirmation enabled for password reset functionality*@
 

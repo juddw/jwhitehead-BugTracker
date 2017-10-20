@@ -214,7 +214,7 @@ namespace jwhitehead_BugTracker.Controllers
             return RedirectToAction("Index", new { Message = ManageMessageId.RemovePhoneSuccess });
         }
 
-        //
+       
         // GET: /Manage/ChangePassword
         public ActionResult ChangePassword()
         {
@@ -229,18 +229,27 @@ namespace jwhitehead_BugTracker.Controllers
             return View();
         }
 
+
         // GET: /Manage/ChangePasswordNotAuthorized
         public ActionResult ChangePasswordNotAuthorized()
         {
             return View();
         }
 
-        //
+     
         // POST: /Manage/ChangePassword
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ChangePassword(ChangePasswordViewModel model)
         {
+            var user1 = UserManager.FindById(User.Identity.GetUserId());
+
+            if (user1.UserName == "admin@coderfoundry.com" || user1.UserName == "projectmanager@coderfoundry.com"
+               || user1.UserName == "developer@coderfoundry.com" || user1.UserName == "submitter@coderfoundry.com")
+            {
+                return RedirectToAction("ChangePasswordNotAuthorized", "Manage");
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -353,17 +362,27 @@ namespace jwhitehead_BugTracker.Controllers
             return View(model);
         }
 
+
         // GET: /Manage/ChangeNameNotAuthorized
         public ActionResult ChangeNameNotAuthorized()
         {
             return View();
         }
 
+
         // POST: /Manage/ChangeName
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ChangeName(ChangeNameViewModel model)
         {
+            var user1 = UserManager.FindById(User.Identity.GetUserId());
+
+            if (user1.UserName == "admin@coderfoundry.com" || user1.UserName == "projectmanager@coderfoundry.com"
+               || user1.UserName == "developer@coderfoundry.com" || user1.UserName == "submitter@coderfoundry.com")
+            {
+                return RedirectToAction("ChangePasswordNotAuthorized", "Manage");
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);

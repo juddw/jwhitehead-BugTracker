@@ -304,11 +304,15 @@
     <Content Include="assets\images\attached-files\img-3.png" />
     <Content Include="assets\images\big\bg.jpg" />
     <Content Include="assets\images\big\bg1.jpg" />
+    <Content Include="assets\images\big\bugTracker-Landing-wBug.jpg" />
+    <Content Include="assets\images\big\bugTracker-Landing.jpg" />
+    <Content Include="assets\images\big\bugTracker-Login.jpg" />
     <Content Include="assets\images\big\img1.jpg" />
     <Content Include="assets\images\big\img2.jpg" />
     <Content Include="assets\images\big\img3.jpg" />
     <Content Include="assets\images\big\img4.jpg" />
     <Content Include="assets\images\big\img5.jpg" />
+    <Content Include="assets\images\big\white-bug.png" />
     <Content Include="assets\images\brand\coco-cola.jpg" />
     <Content Include="assets\images\brand\coder.jpg" />
     <Content Include="assets\images\brand\dribbble-1.jpg" />
@@ -1939,6 +1943,7 @@
     <Content Include="Views\Shared\_AccountLayout.cshtml" />
     <Content Include="Views\Manage\ChangePasswordNotAuthorized.cshtml" />
     <Content Include="Views\Manage\ChangeNameNotAuthorized.cshtml" />
+    <Content Include="Views\Home\LandingPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -14,6 +14,12 @@ namespace jwhitehead_BugTracker.Controllers
             return View();
         }
 
+        [AllowAnonymous]
+        public ActionResult LandingPage()
+        {
+            return View();
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
