@@ -154,6 +154,10 @@ namespace jwhitehead_BugTracker.Controllers
         {
             if (ModelState.IsValid)
             {
+                var timezones = TimeZoneInfo.GetSystemTimeZones(); /*jw 10/22/17*/
+                var defaulttimezone = TimeZoneInfo.FindSystemTimeZoneById("US Eastern Standard Time");
+                ViewBag.TimeZone = new SelectList(timezones, "Id", "Id", defaulttimezone); /*jw 10/22/17*/
+
                 var user = new ApplicationUser
                 {
                     UserName = model.Email,

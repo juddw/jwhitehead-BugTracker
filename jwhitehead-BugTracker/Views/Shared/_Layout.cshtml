@@ -9,6 +9,7 @@
     <link rel="shortcut icon" href="~/assets/images/favicon.ico">
 
     <title>jwhitehead Bug Tracker</title>
+    <link href="~/assets/css/myStyles.css" rel="stylesheet" />
 
     <!--Morris Chart CSS -->
     <link rel="stylesheet" href="~/assets/plugins/morris/morris.css">
@@ -237,7 +238,7 @@
                             <a href="@Url.Action("Index", "Tickets")"><i class="fa fa-ticket"></i><span> Tickets </span> </a>
                         </li>
 
-                        @if (User.IsInRole("Admin") || User.IsInRole("Project Manager") || User.IsInRole("Developer"))
+                        @if (User.IsInRole("Admin"))
                         {
                             <li>
                                 <a href="@Url.Action("Index", "Admin")"><i class="zmdi zmdi-account-add"></i><span> Edit Roles </span> </a>

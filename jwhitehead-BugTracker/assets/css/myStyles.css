@@ -1,4 +1,5 @@
-﻿#LoginWindow {
+﻿/* FOR ALL ACCOUNT PAGE DIALOG WINDOWS */
+#LoginWindow {
     margin: auto;
     width: 500px;
     height: auto;
@@ -19,6 +20,7 @@
     padding-bottom: 20px;
 }
 
+/* FOR LOGIN PAGE */
 #logInButton {
     background-color: #334959;
 }
@@ -27,17 +29,26 @@
         background-color: #377989;
     }
 
-/* For Login Page */
 .account-pages {
-    background: url("../images/big/bugTracker-Landing.jpg") center;
+    background: url("../images/big/bugTracker-Login.jpg") center;
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
 }
 
-/* For Landing Page */
+.loginLogo {
+    float: left;
+    width: 200px;
+    height: 200px;
+    margin-top: 55px;
+    margin-left: 30px;
+    position: absolute; /*need this to push logo behind the login window*/
+    z-index: -1; /*need this to push logo behind the login window*/
+}
+
+/* FOR LANDING PAGE */
 .landing-page {
-    background: url("../images/big/bugTracker-Landing.jpg") center;
+    background: url("../images/big/bugTracker-Landing-wBug.jpg") center;
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
@@ -54,29 +65,32 @@
     /*text-indent: -9999px; /* we don't need to see the text, but some users and robots such as Google do */
 }
 
-.loginLogo {
-    float: left;
-    width: 200px;
-    height: 150px;
-    margin-top: 55px;
-    position: absolute; /*need this to push logo behind the login window*/
-    z-index: -1; /*need this to push logo behind the login window*/
-}
-
 .landingLogo {
     float: left;
     width: 200px;
-    height: 150px;
+    height: 200px;
+    margin-left: 30px;
     margin-top: 50px;
 }
 
 .landingTextLogo {
     color: #ffffff !important;
     font-size: 40px;
-    margin-top: 8px;
     font-family: 'Rancho', cursive;
     float: left;
+    margin-left: 15px;
     margin-top: 80px;
     position: absolute;
     z-index: 1;
+}
+
+/* FOR TICKETS HISTORY */
+
+.ticketHistoryHeaderStyling {
+    background-color: #ffffff;
+    padding: 10px;
+    margin: -10px -10px 10px -10px;
+    border-color: #373737;
+    border-bottom: dotted;
+    border-width: thin;
 }

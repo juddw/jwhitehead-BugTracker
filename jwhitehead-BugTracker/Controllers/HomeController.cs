@@ -11,6 +11,13 @@ namespace jwhitehead_BugTracker.Controllers
     {
         public ActionResult Index()
         {
+            ViewBag.AssignedTk = db.Tickets.Where(t => t.TicketStatus.Name == "Assigned").Count();
+            ViewBag.UnassignedTk = db.Tickets.Where(t => t.TicketStatus.Name == "Unassigned").Count();
+            ViewBag.CompleteTk = db.Tickets.Where(t => t.TicketStatus.Name == "Complete").Count();
+            ViewBag.InProgressTk = db.Tickets.Where(t => t.TicketStatus.Name == "In Progress").Count();
+
+            ViewBag.TotalProjects = db.Projects.Count();
+            ViewBag.TotalTickets = db.Tickets.Count();
             return View();
         }
 

@@ -186,104 +186,572 @@
 
         <p style="margin: 0px 0px 0px 0px;">
             @{
-                        // Permission by Roles Edit/Delete Buttons for Comments
-                        if (User.IsInRole("Admin") || User.IsInRole("Project Manager") && comment.Ticket.Project.Users.Any(u => u.Id == ViewBag.UserId) || comment.AuthorId == ViewBag.UserId)
-                        {
-                            @*@Html.ActionLink("Edit", "CommentEdit", "Tickets", new { id = comment.Id }, new { @class = "editText" }) <span>|</span>*@
-                            @Html.ActionLink("Delete", "CommentDelete", "Tickets", new { id = comment.Id }, new { @class = "editText" })
-                        }
-                    }
+                // Permission by Roles Edit/Delete Buttons for Comments
+                if (User.IsInRole("Admin") || User.IsInRole("Project Manager") && comment.Ticket.Project.Users.Any(u => u.Id == ViewBag.UserId) || comment.AuthorId == ViewBag.UserId)
+                {
+                    @*@Html.ActionLink("Edit", "CommentEdit", "Tickets", new { id = comment.Id }, new { @class = "editText" }) <span>|</span>*@
+                    @Html.ActionLink("Delete", "CommentDelete", "Tickets", new { id = comment.Id }, new { @class = "editText" })
+                }
+            }
 
         </p>
         <br />
                     }
-            }
+                }
+
+
+@*OLD STYLED HISTORY*@
+
 @*TICKET HISTORY*@
 <hr style="border-color: #808080; margin-top: 50px;" />
 
 <h3>Ticket History</h3>
 <br />
-@foreach (var history in Model.Histories)
-{
-    if (history != null && history.AuthorId != null)
+@*@foreach (var history in Model.Histories)
     {
-        if (history.Property == "TICKET CREATED")
+        if (history != null && history.AuthorId != null)
         {
-            <p>
-                <span style="color: #10653a; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
+            if (history.Property == "TICKET CREATED")
+            {
+                <p>
+                    <span style="color: #10653a; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
+                    <br />
+                    @history.Author.FullName
+                </p>
                 <br />
-                @history.Author.FullName
-            </p>
-            <br />
-        }
-        
-        if (history.Property == "TICKET EDITED")
-        {
-            <p>
-                <span style="color: goldenrod; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
-                <br />
-                @*How do I get the current User's Name?*@
-                @history.Author.FullName edited ticket &#34;@Model.Title&#34;
-            </p>
-            <p>
-                <span>&#34;@history.OldValue&#34; was changed to:
-                <br />
-                &#34;@history.NewValue&#34;</span>
-            </p>
-            <br />
-        }
+            }
 
-        if (history.Property == "NEW TICKET ATTACHMENT")
-        {
-            <p>
-                <span style="color: #635645; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
-                <br />
-                @history.Author.FullName
-            </p>
-            <p>
-                <a href="/Uploads" + @history.NewValue target="_blank">@history.NewValue</a>
-            </p>
-            <br />
-        }
+            if (history.Property == "TICKET EDITED")
+            {
+                <p>
+                    <span style="color: goldenrod; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
+                    <br />
 
-        if (history.Property == "NEW TICKET COMMENT")
-        {
-            <p>
-                <span style="color: #334959; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
+                    @history.Author.FullName edited ticket &#34;@Model.Title&#34;
+                </p>
+                <p>
+                    <span>
+                        &#34;@history.OldValue&#34; was changed to:
+                        <br />
+                        &#34;@history.NewValue&#34;
+                    </span>
+                </p>
                 <br />
-                @history.Author.FullName added this comment:
-            </p>
-            <p>
-                <span style="color: #334959;">&#34;@history.NewValue&#34;</span>
-            </p>
-            <br />
-        }
+            }
 
-        if (history.Property == "COMMENT DELETED")
-        {
-            <p>
-                <span style="color: brown; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
+            if (history.Property == "NEW TICKET ATTACHMENT")
+            {
+                <p>
+                    <span style="color: #635645; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
+                    <br />
+                    @history.Author.FullName
+                </p>
+                <p>
+                    <a href="/Uploads" + @history.NewValue target="_blank">@history.NewValue</a>
+                </p>
                 <br />
-                @history.Author.FullName deleted this comment:
-            </p>
-            <p>
-                <span>&#34;@history.NewValue&#34;</span>
-            </p>
-            <br />
-        }
+            }
 
-        if (history.Property == "ATTACHMENT DELETED")
-        {
-            <p>
-                <span style="color: brown; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
+            if (history.Property == "NEW TICKET COMMENT")
+            {
+                <p>
+                    <span style="color: #334959; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
+                    <br />
+                    @history.Author.FullName added this comment:
+                </p>
+                <p>
+                    <span style="color: #334959;">&#34;@history.NewValue&#34;</span>
+                </p>
                 <br />
-                @history.Author.FullName deleted this attachment:
-            </p>
-            <p>
-                <span>&#34;@history.NewValue&#34;</span>
-            </p>
-            <br />
-        }
+            }
 
+            if (history.Property == "COMMENT DELETED")
+            {
+                <p>
+                    <span style="color: brown; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
+                    <br />
+                    @history.Author.FullName deleted this comment:
+                </p>
+                <p>
+                    <span>&#34;@history.NewValue&#34;</span>
+                </p>
+                <br />
+            }
+
+            if (history.Property == "ATTACHMENT DELETED")
+            {
+                <p>
+                    <span style="color: brown; font-weight: 600">@history.Property</span> - @Html.ToUserTime(history.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")
+                    <br />
+                    @history.Author.FullName deleted this attachment:
+                </p>
+                <p>
+                    <span>&#34;@history.NewValue&#34;</span>
+                </p>
+                <br />
+            }
+
+        }
     }
-}
+*@
+
+<div class="wrapper">
+    <div class="container">
+
+        <!-- Page-Title -->
+        @*<div class="row">
+                <div class="col-sm-12">
+                    <div class="btn-group pull-right m-t-15">
+                        <button type="button" class="btn btn-custom dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="false">Settings <span class="m-l-5"><i class="fa fa-cog"></i></span></button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#">Action</a></li>
+                            <li><a href="#">Another action</a></li>
+                            <li><a href="#">Something else here</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Separated link</a></li>
+                        </ul>
+                    </div>
+                    <h4 class="page-title">Timeline</h4>
+                </div>
+            </div>*@
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="timeline">
+                    @*<article class="timeline-item alt">
+                            <div class="text-right">
+                                <div class="time-show first">
+                                    <a href="#" class="btn btn-custom w-lg">Today</a>
+                                </div>
+                            </div>
+                        </article>*@
+                    @{
+                        int counter = 0;
+                    }
+
+                    @foreach (var item in Model.Histories) // Determine which side to push history to.
+                    {
+                        counter++;
+                        if (counter % 2 == 0)
+                        {
+                            <article class="timeline-item ">
+                                <div class="timeline-desk">
+                                    <div class="panel">
+                                        <div class="panel-body">
+                                            <span class="arrow"></span>
+
+                                            @if (item.Property == "TICKET CREATED")
+                                            {
+                                                <span class="timeline-icon bg-success"><i class="zmdi zmdi-circle"></i></span>
+
+                                                <div>
+                                                    <h4 class="text-success" style="font-weight: 800;">@item.Property</h4>
+                                                    <p>
+                                                        <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
+                                                        <br />
+                                                        <small style="color: black;">
+                                                            by: @item.Author.FullName
+                                                        </small>
+                                                    </p>
+                                                </div>
+                                            }
+
+                                            @if (item.Property == "TICKET EDITED")
+                                            {
+                                                <span class="timeline-icon bg-warning"><i class="zmdi zmdi-circle"></i></span>
+
+                                                <div class="ticketHistoryHeaderStyling">
+                                                    <h4 class="text-warning" style="font-weight: 800;">@item.Property</h4>
+                                                    <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
+                                                    <p>
+                                                        <small style="color: black;">by: @item.Author.FullName</small>
+                                                    </p>
+                                                </div>
+
+                                                <p>
+                                                    <span style="color: black;">Ticket Name:</span><br />
+                                                    &#34;@Model.Title&#34;
+                                                </p>
+                                                <p>
+                                                    <span style="color: black;">Edited:</span><br />
+                                                    &#34;@item.OldValue&#34; was changed to &#34;@item.NewValue&#34;
+                                                </p>
+                                            }
+
+                                            @if (item.Property == "NEW TICKET ATTACHMENT")
+                                            {
+                                                <span class="timeline-icon bg-success"><i class="zmdi zmdi-circle"></i></span>
+
+                                                <div class="ticketHistoryHeaderStyling">
+                                                    <h4 class="text-success" style="font-weight: 800;">@item.Property</h4>
+                                                    <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
+                                                    <p>
+                                                        <small style="color: black;">by: @item.Author.FullName</small>
+                                                    </p>
+                                                </div>
+
+                                                <p>
+                                                    <span style="color: black;">Attachment:</span><br />
+                                                    <a href="/Uploads" + @item.NewValue target="_blank">@item.NewValue</a>
+                                                </p>
+                                            }
+
+                                            @if (item.Property == "NEW TICKET COMMENT")
+                                            {
+                                                <span class="timeline-icon bg-success"><i class="zmdi zmdi-circle"></i></span>
+
+                                                <div class="ticketHistoryHeaderStyling">
+                                                    <h4 class="text-success" style="font-weight: 800;">@item.Property</h4>
+                                                    <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
+                                                    <p>
+                                                        <small style="color: black;">by: @item.Author.FullName</small>
+                                                    </p>
+                                                </div>
+
+                                                <p>
+                                                    <span style="color: black;">Comment Added:</span><br />
+                                                    <span>&#34;@item.NewValue&#34;</span>
+                                                </p>
+                                            }
+
+                                            @if (item.Property == "ATTACHMENT DELETED")
+                                            {
+                                                <span class="timeline-icon bg-danger"><i class="zmdi zmdi-circle"></i></span>
+
+                                                <div class="ticketHistoryHeaderStyling">
+                                                    <h4 class="text-danger" style="font-weight: 800;">@item.Property</h4>
+                                                    <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
+                                                    <p>
+                                                        <small style="color: black;"> by: @item.Author.FullName</small>
+                                                    </p>
+                                                </div>
+
+                                                <p>
+                                                    <span style="color: black;">Attachment Deleted:</span><br />
+                                                    <span>&#34;@item.NewValue&#34;</span>
+                                                </p>
+                                                <br />
+                                            }
+
+                                            @if (item.Property == "COMMENT DELETED")
+                                            {
+                                                <span class="timeline-icon bg-danger"><i class="zmdi zmdi-circle"></i></span>
+
+                                                <div class="ticketHistoryHeaderStyling">
+                                                    <h4 class="text-danger" style="font-weight: 800;">@item.Property</h4>
+                                                    <p class="timeline-date text-muted">
+                                                        <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
+                                                        <br />
+                                                        <small style="color: black;">by: @item.Author.FullName</small>
+                                                    </p>
+                                                </div>
+
+                                                <p>
+                                                    <span style="color: black;">Deleted Comment:</span><br />
+                                                    <span>&#34;@item.NewValue&#34;</span>
+                                                </p>
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        }
+                        else
+                        {
+                            // LEFT SIDE OF TIMELINE:
+                            <article class="timeline-item alt">
+                                <div class="timeline-desk">
+                                    <div class="panel">
+                                        <div class="panel-body">
+                                            <span class="arrow-alt"></span>
+
+                                            @if (item.Property == "TICKET CREATED")
+                                            {
+                                                <span class="timeline-icon bg-success"><i class="zmdi zmdi-circle"></i></span>
+
+                                                <div>
+                                                    <h4 class="text-success" style="font-weight: 800;">@item.Property</h4>
+                                                    <p>
+                                                        <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
+                                                        <br />
+                                                        <small style="color: black;">
+                                                            by: @item.Author.FullName
+                                                        </small>
+                                                    </p>
+                                                </div>
+                                            }
+
+                                            @if (item.Property == "TICKET EDITED")
+                                            {
+                                                <span class="timeline-icon bg-warning"><i class="zmdi zmdi-circle"></i></span>
+
+                                                <div class="ticketHistoryHeaderStyling">
+                                                    <h4 class="text-warning" style="font-weight: 800;">@item.Property</h4>
+                                                    <p>
+                                                        <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
+                                                        <br />
+                                                        <small style="color: black;">by: @item.Author.FullName</small>
+                                                    </p>
+                                                </div>
+
+                                                <p>
+                                                    <span style="color: black;">Ticket Name:</span><br />
+                                                    &#34;@Model.Title&#34;
+                                                </p>
+                                                <p>
+                                                    <span style="color: black;">Edited:</span><br />
+                                                </p>
+
+                                                if (item.OldValue == null)
+                                                {
+                                                    <p>An empty field was changed to &#34;@item.NewValue&#34;</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>&#34;@item.OldValue&#34; was changed to &#34;@item.NewValue&#34;</p>
+                                                }
+                                            }
+
+
+                                            @if (item.Property == "NEW TICKET ATTACHMENT")
+                                            {
+                                                <span class="timeline-icon bg-success"><i class="zmdi zmdi-circle"></i></span>
+
+                                                <div class="ticketHistoryHeaderStyling">
+                                                    <h4 class="text-success" style="font-weight: 800;">@item.Property</h4>
+                                                    <p>
+                                                        <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
+                                                        <br />
+                                                        <small style="color: black;">by: @item.Author.FullName</small>
+                                                    </p>
+                                                </div>
+
+                                                <p>
+                                                    <span style="color: black;">Attachment:</span><br />
+                                                    <a href="/Uploads" + @item.NewValue target="_blank">@item.NewValue</a>
+                                                </p>
+                                            }
+
+                                            @if (item.Property == "NEW TICKET COMMENT")
+                                            {
+                                                <span class="timeline-icon bg-success"><i class="zmdi zmdi-circle"></i></span>
+
+                                                <div class="ticketHistoryHeaderStyling">
+                                                    <h4 class="text-success" style="font-weight: 800;">@item.Property</h4>
+                                                    <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
+                                                    <p>
+                                                        <small style="color: black;">by: @item.Author.FullName</small>
+                                                    </p>
+                                                </div>
+
+                                                <p>
+                                                    <span style="color: black;">Comment Added:</span><br />
+                                                    <span>&#34;@item.NewValue&#34;</span>
+                                                </p>
+                                            }
+
+                                            @if (item.Property == "ATTACHMENT DELETED")
+                                            {
+                                                <span class="timeline-icon bg-danger"><i class="zmdi zmdi-circle"></i></span>
+
+                                                <div class="ticketHistoryHeaderStyling">
+                                                    <h4 class="text-danger" style="font-weight: 800;">@item.Property</h4>
+                                                    <p>
+                                                        <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
+                                                        <br />
+                                                        <small style="color: black;"> by: @item.Author.FullName</small>
+                                                    </p>
+                                                </div>
+
+                                                <p>
+                                                    <span style="color: black;">Attachment Deleted:</span><br />
+                                                    <span>&#34;@item.NewValue&#34;</span>
+                                                </p>
+                                                <br />
+                                            }
+
+                                            @if (item.Property == "COMMENT DELETED")
+                                            {
+                                                <span class="timeline-icon bg-danger"><i class="zmdi zmdi-circle"></i></span>
+
+                                                <div class="ticketHistoryHeaderStyling">
+                                                    <h4 class="text-danger" style="font-weight: 800;">@item.Property</h4>
+                                                    <p>
+                                                        <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
+                                                        <br />
+                                                        <small style="color: black;">by: @item.Author.FullName</small>
+                                                    </p>
+                                                </div>
+
+                                                <p>
+                                                    <span style="color: black;">Deleted Comment:</span><br />
+                                                    <span>&#34;@item.NewValue&#34;</span>
+                                                </p>
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        }
+                    }
+                    @*REFERENCE TO HISTORY TEMPLATE*@
+                    @*<article class="timeline-item alt">
+                            <div class="timeline-desk">
+                                <div class="panel">
+                                    <div class="panel-body">
+                                        <span class="arrow-alt"></span>
+                                        <span class="timeline-icon bg-primary"><i class="zmdi zmdi-circle"></i></span>
+                                        <h4 class="text-primary">10 hours ago</h4>
+                                        <p class="timeline-date text-muted"><small>08:25 am</small></p>
+                                        <p>3 new photo Uploaded on facebook fan page</p>
+                                        <div class="album">
+                                            <a href="#">
+                                                <img alt="" src="assets/images/small/img1.jpg">
+                                            </a>
+                                            <a href="#">
+                                                <img alt="" src="assets/images/small/img2.jpg">
+                                            </a>
+                                            <a href="#">
+                                                <img alt="" src="assets/images/small/img3.jpg">
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="timeline-item">
+                            <div class="timeline-desk">
+                                <div class="panel">
+                                    <div class="panel-body">
+                                        <span class="arrow"></span>
+                                        <span class="timeline-icon bg-purple"><i class="zmdi zmdi-circle"></i></span>
+                                        <h4 class="text-purple">14 hours ago</h4>
+                                        <p class="timeline-date text-muted"><small>08:25 am</small></p>
+                                        <p>
+                                            Outdoor visit at California State Route 85 with John Boltana &
+                                            Harry Piterson regarding to setup a new show room.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="timeline-item alt">
+                            <div class="timeline-desk">
+                                <div class="panel">
+                                    <div class="panel-body">
+                                        <span class="arrow-alt"></span>
+                                        <span class="timeline-icon"><i class="zmdi zmdi-circle"></i></span>
+                                        <h4 class="text-muted">19 hours ago</h4>
+                                        <p class="timeline-date text-muted"><small>08:25 am</small></p>
+                                        <p>
+                                            Jonatha Smith added new milestone <span><a href="#">Pathek</a></span>
+                                            Lorem ipsum dolor sit amet consiquest dio
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="timeline-item alt">
+                            <div class="text-right">
+                                <div class="time-show">
+                                    <a href="#" class="btn btn-custom w-lg">Yesterday</a>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="timeline-item">
+                            <div class="timeline-desk">
+                                <div class="panel">
+                                    <div class="panel-body">
+                                        <span class="arrow"></span>
+                                        <span class="timeline-icon bg-warning"><i class="zmdi zmdi-circle"></i></span>
+                                        <h4 class="text-warning">07 January 2016</h4>
+                                        <p class="timeline-date text-muted"><small>08:25 am</small></p>
+                                        <p>
+                                            Montly Regular Medical check up at Greenland Hospital by the
+                                            doctor <span><a href="#"> Johm meon </a></span>
+                                        </p>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="timeline-item alt">
+                            <div class="timeline-desk">
+                                <div class="panel">
+                                    <div class="panel-body">
+                                        <span class="arrow-alt"></span>
+                                        <span class="timeline-icon bg-primary"><i class="zmdi zmdi-circle"></i></span>
+                                        <h4 class="text-primary">07 January 2016</h4>
+                                        <p class="timeline-date text-muted"><small>08:25 am</small></p>
+                                        <p>Download the new updates of Ubold admin dashboard</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="timeline-item">
+                            <div class="timeline-desk">
+                                <div class="panel">
+                                    <div class="panel-body">
+                                        <span class="arrow"></span>
+                                        <span class="timeline-icon bg-success"><i class="zmdi zmdi-circle"></i></span>
+                                        <h4 class="text-success">07 January 2016</h4>
+                                        <p class="timeline-date text-muted"><small>08:25 am</small></p>
+                                        <p>
+                                            Jonatha Smith added new milestone <span><a class="blue" href="#">crishtian</a></span>
+                                            Lorem ipsum dolor sit amet consiquest dio
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="timeline-item alt">
+                            <div class="text-right">
+                                <div class="time-show">
+                                    <a href="#" class="btn btn-custom w-lg">Last Month</a>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="timeline-item alt">
+                            <div class="timeline-desk">
+                                <div class="panel">
+                                    <div class="panel-body">
+                                        <span class="arrow-alt"></span>
+                                        <span class="timeline-icon"><i class="zmdi zmdi-circle"></i></span>
+                                        <h4 class="text-muted">31 December 2015</h4>
+                                        <p class="timeline-date text-muted"><small>08:25 am</small></p>
+                                        <p>Download the new updates of Ubold admin dashboard</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="timeline-item">
+                            <div class="timeline-desk">
+                                <div class="panel">
+                                    <div class="panel-body">
+                                        <span class="arrow"></span>
+                                        <span class="timeline-icon bg-danger"><i class="zmdi zmdi-circle"></i></span>
+                                        <h4 class="text-danger">16 Decembar 2015</h4>
+                                        <p class="timeline-date text-muted"><small>08:25 am</small></p>
+                                        <p>
+                                            Jonatha Smith added new milestone <span><a href="#">prank</a></span>
+                                            Lorem ipsum dolor sit amet consiquest dio
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>*@
+
+                </div>
+            </div>
+        </div>
+        <!-- end row -->
+
+    </div>
+    <!-- end container -->
+</div>

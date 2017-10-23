@@ -189,7 +189,7 @@ namespace jwhitehead_BugTracker.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         // Bind ensures the values are all entered
-        public ActionResult CreateAttachment([Bind(Include = "Id,TicketId,Description")] TicketAttachment item, HttpPostedFileBase image)
+        public async Task<ActionResult> CreateAttachment([Bind(Include = "Id,TicketId,Description")] TicketAttachment item, HttpPostedFileBase image)
         {
             // Validation.
             if (image != null && image.ContentLength > 0) // checking to make sure there is a file, and that the file has more than 0 bytes of information.
@@ -201,13 +201,15 @@ namespace jwhitehead_BugTracker.Controllers
 
             if (ModelState.IsValid)
             {
-                var filePath = "assets/User-uploads/"; // url path
+                var filePath = "/assets/User-uploads/"; // url path
                 var absPath = Server.MapPath("~" + filePath);  // physical file path
                 item.FileUrl = filePath + image.FileName; // path of the file
                 image.SaveAs(Path.Combine(absPath, image.FileName)); // saves
                 item.Created = DateTimeOffset.UtcNow;
                 item.AuthorId = User.Identity.GetUserId();
                 db.TicketAttachments.Add(item);
+
+                var post = db.Tickets.Find(item.TicketId);
 
                 //Add to Ticket Details Page History that Attachment was made.
                 TicketHistory ticketHistory = new TicketHistory();
@@ -218,15 +220,22 @@ namespace jwhitehead_BugTracker.Controllers
                 ticketHistory.NewValue = item.FileUrl; // put the url in newValue to enable posting it in the History.
                 db.TicketHistories.Add(ticketHistory);
 
-                // take snapshot of ticket when it is created
-                // put snapshot in OldValue
-                // when Ticket is Edited, take snapshot of ticket and put in NewValue
-                // compare all fields in OldValue to NewValue
-                // anything that changed post to Ticket Details under Edit POST action.
-                // set OldValue to NewValue
-                // 
-
                 db.SaveChanges();
+
+                // NOTIFICATION CREATED ATTACHMENT - Notify Developer on ticket that attachment was added.
+                // This comes after db.SaveChanges.
+                UserRoleHelper helper = new UserRoleHelper();
+                var proj = db.Projects.Find(item.Ticket.ProjectId);
+                foreach (var person in proj.Users)
+                {
+                    if (helper.IsUserInRole(person.Id, "Developer"))
+                    {
+                        // CODE FOR EMAIL NOTIFICATON
+                        var callbackUrl = Url.Action("Details", "Tickets", new { id = item.Ticket.Id }, protocol: Request.Url.Scheme);
+                        await UserManager.SendEmailAsync(person.Id, "Ticket Attachment Added!", "A ticket attachment has been added to a project you are assigned to: " + proj.Title + "!<br/><br/>  Please click <a href=\"" + callbackUrl + "\">here</a> to view it." + "<br/><br/>" + "A summary of the changes is below:<br/><br/>" + "Added attachment: " + ticketHistory.NewValue);
+                    }
+                }
+
                 return RedirectToAction("Details", new { id = item.TicketId });
             }
 
@@ -236,7 +245,7 @@ namespace jwhitehead_BugTracker.Controllers
 
         // Commments/Create/
         [Authorize]
-        public ActionResult CreateComments([Bind(Include = "Id,Body,TicketId")] TicketComment comment)
+        public async Task<ActionResult> CreateComments([Bind(Include = "Id,Body,TicketId")] TicketComment comment)
         {
             var userId = User.Identity.GetUserId();
 
@@ -261,6 +270,20 @@ namespace jwhitehead_BugTracker.Controllers
                     db.TicketHistories.Add(ticketHistory);
 
                     db.SaveChanges();
+
+                    // NOTIFICATION CREATED COMMENT - Notify Developer on ticket that comment was added.
+                    // This comes after db.SaveChanges.
+                    UserRoleHelper helper = new UserRoleHelper();
+                    var proj = db.Projects.Find(comment.Ticket.ProjectId);
+                    foreach (var person in proj.Users)
+                    {
+                        if (helper.IsUserInRole(person.Id, "Developer"))
+                        {
+                            // CODE FOR EMAIL NOTIFICATON
+                            var callbackUrl = Url.Action("Details", "Tickets", new { id = comment.Ticket.Id }, protocol: Request.Url.Scheme);
+                            await UserManager.SendEmailAsync(person.Id, "Ticket Comment Added!", "A ticket comment has been added to a project you are assigned to: " + proj.Title + "!<br/><br/>  Please click <a href=\"" + callbackUrl + "\">here</a> to view it." + "<br/><br/>" + "A summary of the changes is below:<br/><br/>" + "Added comment: " + ticketHistory.NewValue);
+                        }
+                    }
 
                     return RedirectToAction("Details", new { id = comment.TicketId });
                 }

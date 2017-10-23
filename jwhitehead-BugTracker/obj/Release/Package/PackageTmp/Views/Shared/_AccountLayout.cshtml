@@ -12,10 +12,12 @@
 </head>
 
 <body class="account-pages">
+    <img class="loginLogo" src="~/assets/images/big/white-bug.png" />
+
     <div class="row">
         <div id="LoginWindow">
             @RenderBody()
-        </div>
+        </div>    
     </div>
     @RenderSection("scripts", required: false) @*Renders scripts in section scripts found in Index, etc.*@
 </body>
