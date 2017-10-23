@@ -459,6 +459,7 @@
                         }
                         else
                         {
+                            // LEFT SIDE OF TIMELINE:
                             <article class="timeline-item alt">
                                 <div class="timeline-desk">
                                     <div class="panel">
@@ -487,8 +488,9 @@
 
                                                 <div class="ticketHistoryHeaderStyling">
                                                     <h4 class="text-warning" style="font-weight: 800;">@item.Property</h4>
-                                                    <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
                                                     <p>
+                                                        <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
+                                                        <br />
                                                         <small style="color: black;">by: @item.Author.FullName</small>
                                                     </p>
                                                 </div>
@@ -499,9 +501,18 @@
                                                 </p>
                                                 <p>
                                                     <span style="color: black;">Edited:</span><br />
-                                                    &#34;@item.OldValue&#34; was changed to &#34;@item.NewValue&#34;
                                                 </p>
+
+                                                if (item.OldValue == null)
+                                                {
+                                                    <p>An empty field was changed to &#34;@item.NewValue&#34;</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>&#34;@item.OldValue&#34; was changed to &#34;@item.NewValue&#34;</p>
+                                                }
                                             }
+
 
                                             @if (item.Property == "NEW TICKET ATTACHMENT")
                                             {
@@ -509,8 +520,9 @@
 
                                                 <div class="ticketHistoryHeaderStyling">
                                                     <h4 class="text-success" style="font-weight: 800;">@item.Property</h4>
-                                                    <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
                                                     <p>
+                                                        <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
+                                                        <br />
                                                         <small style="color: black;">by: @item.Author.FullName</small>
                                                     </p>
                                                 </div>
@@ -546,7 +558,7 @@
                                                 <div class="ticketHistoryHeaderStyling">
                                                     <h4 class="text-danger" style="font-weight: 800;">@item.Property</h4>
                                                     <p>
-                                                    <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
+                                                        <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
                                                         <br />
                                                         <small style="color: black;"> by: @item.Author.FullName</small>
                                                     </p>
@@ -566,9 +578,9 @@
                                                 <div class="ticketHistoryHeaderStyling">
                                                     <h4 class="text-danger" style="font-weight: 800;">@item.Property</h4>
                                                     <p>
-                                                    <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
+                                                        <small>@Html.ToUserTime(item.Created, ViewBag.UserTimeZone as string, "MM/dd/yyyy, h:mm:ss tt")</small>
                                                         <br />
-                                                    <small style="color: black;">by: @item.Author.FullName</small>
+                                                        <small style="color: black;">by: @item.Author.FullName</small>
                                                     </p>
                                                 </div>
 
