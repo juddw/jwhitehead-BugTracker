@@ -198,6 +198,11 @@ namespace jwhitehead_BugTracker.Controllers
                 if (ext != ".png" && ext != ".jpg" && ext != ".jpeg" && ext != ".gif" && ext != ".bmp" && ext != ".txt" && ext != ".doc" && ext != ".rtf" && ext != ".pdf" && ext != ".ppt" && ext != ".pptx" && ext != ".xlsx" && ext != ".xls")
                     ModelState.AddModelError("image", "Invalid Format."); // Don't need curly braces with only one line of code.
             }
+            // No image uploaded before presses upload button
+            if (image == null)
+            {
+                return RedirectToAction("Details", new { id = item.TicketId });
+            }
 
             if (ModelState.IsValid)
             {
