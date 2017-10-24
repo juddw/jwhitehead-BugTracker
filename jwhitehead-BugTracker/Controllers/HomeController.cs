@@ -9,6 +9,7 @@ namespace jwhitehead_BugTracker.Controllers
     [Authorize]
     public class HomeController : Universal
     {
+        [RequireHttps] // one of the steps to force the page to render secure page.
         public ActionResult Index()
         {
             ViewBag.AssignedTk = db.Tickets.Where(t => t.TicketStatus.Name == "Assigned").Count();

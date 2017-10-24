@@ -12,6 +12,7 @@ using jwhitehead_BugTracker.Models;
 
 namespace jwhitehead_BugTracker.Controllers
 {
+    [RequireHttps] // one of the steps to force the page to render secure page.
     [Authorize]
     public class AccountController : Universal
     {
