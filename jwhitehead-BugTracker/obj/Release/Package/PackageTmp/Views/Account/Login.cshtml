@@ -59,7 +59,7 @@
 
     @*ADD DEMO BUTTONS Admin Demo*@
     @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-     {
+    {
         @Html.AntiForgeryToken()
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
@@ -83,7 +83,7 @@
 
     @*Project Manager Demo*@
     @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-     {
+    {
         @Html.AntiForgeryToken()
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
@@ -151,14 +151,12 @@
                 <button class="btn btn-primary" style="width: 280px;" type="submit">Submitter Demo</button>
             </div>
         </div>
+        <div class="form-group">
+            <p class="col-md-offset-2 col-md-10">
+                <a href="@Url.Action("Register", "Account")" class="btn btn-warning" style="width: 280px; margin-top: -7px;">Register as a new user</a>
+            </p>
+        </div>
     }
-
-
-    <p class="col-md-offset-2 col-md-10">
-        <a href="@Url.Action("Register", "Account")" class="btn btn-warning" style="width: 280px; margin-left: -15px; margin-top: -7px;">Register as a new user</a>
-    </p>
-    @* Enable this once you have account confirmation enabled for password reset functionality*@
-
 
     <hr style="border-color: #808080;" />
     <footer>
@@ -166,6 +164,7 @@
     </footer>
 
 </section>
+
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

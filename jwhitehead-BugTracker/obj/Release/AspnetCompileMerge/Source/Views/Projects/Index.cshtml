@@ -1,0 +1,167 @@
+﻿@model IEnumerable<jwhitehead_BugTracker.Models.CodeFirst.Project>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<h2>All Projects Listing</h2>
+
+<p>
+    @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
+    {
+        @Html.ActionLink("Create New", "Create")
+    }
+    else
+    {
+        <br />
+    }
+</p>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box table-responsive">
+            @*<div class="dropdown pull-right">
+                <a href="#" class="dropdown-toggle card-drop" data-toggle="dropdown" aria-expanded="false">
+                    <i class="zmdi zmdi-more-vert"></i>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="#">Action</a></li>
+                    <li><a href="#">Another action</a></li>
+                    <li><a href="#">Something else here</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">Separated link</a></li>
+                </ul>
+            </div>*@
+
+            @*<h4 class="header-title m-t-0 m-b-30">Projects List</h4>*@
+
+            <table id="datatable" class="table table-striped table-bordered">
+
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Created)
+                        </th>
+                        <th>
+                            Project Name
+                            @*@Html.DisplayNameFor(model => model.Title)*@
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Description)
+                        </th>
+                        <th>
+                            # of Tickets
+                        </th>
+                        <th>
+                            Assigned To
+                        </th>
+                        @*<th>
+                            Role
+                        </th>*@
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var project in Model)
+                    {
+                        <tr>
+                            <td>
+                                @*@Html.DisplayFor(modelItem => item.Created)*@
+                                @Html.ToUserTime(project.Created, ViewBag.UserTimeZone as string, "MM-dd-yyyy, h:mm:ss tt")
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => project.Title)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => project.Description)
+                            </td>
+                            <td style="text-align: center;">
+                                @project.Tickets.Count
+                            </td>
+                            <td>
+                                @foreach (var user in project.Users)
+                                {
+                                    @user.FullName <br />
+                                }
+                            </td>
+                            @*<td>
+                                @foreach (var role in item.SelectedRoles)
+                                {
+                                    <p>@role</p>
+                                }
+                            </td>*@
+                            <td>
+                                @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
+                                {
+                                    @Html.ActionLink("Edit", "Edit", new { id = project.Id }, new { style = "display: block;" })
+                                }
+
+                                @*@if (User.IsInRole("Admin"))
+                                {
+                                    @Html.ActionLink("Delete", "Delete", new { id = project.Id }, new { style = "display: block;" })
+                                }*@
+
+                                @Html.ActionLink("Details", "Details", new { id = project.Id }, new { style = "display: block;" })
+
+                                @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
+                                {
+                                    @Html.ActionLink("Assign", "ProjectUser", new { id = project.Id }, new { style = "display: block;" })
+                                }
+
+                                @if (User.IsInRole("Submitter"))
+                                {
+                                    @Html.ActionLink("Create Ticket", "Create", "Tickets", new { id = project.Id }, new { style = "display: block;" })
+                                }
+                            </td>
+                       </tr>
+
+                    }
+                </tbody>
+
+            </table>
+
+        </div>
+    </div><!-- end col -->
+</div>
+<!-- end row -->
+
+@section scripts {
+    @*Added with Mark default datatables until I implemented template*@
+    @*<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+        <script>
+            $("#myTable").DataTable();
+        </script>*@
+
+    <!-- Datatables-->
+    <script src="~/assets/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/assets/plugins/datatables/dataTables.bootstrap.js"></script>
+    <script src="~/assets/plugins/datatables/dataTables.buttons.min.js"></script>
+    <script src="~/assets/plugins/datatables/buttons.bootstrap.min.js"></script>
+    <script src="~/assets/plugins/datatables/jszip.min.js"></script>
+    <script src="~/assets/plugins/datatables/pdfmake.min.js"></script>
+    <script src="~/assets/plugins/datatables/vfs_fonts.js"></script>
+    <script src="~/assets/plugins/datatables/buttons.html5.min.js"></script>
+    <script src="~/assets/plugins/datatables/buttons.print.min.js"></script>
+    <script src="~/assets/plugins/datatables/dataTables.fixedHeader.min.js"></script>
+    <script src="~/assets/plugins/datatables/dataTables.keyTable.min.js"></script>
+    <script src="~/assets/plugins/datatables/dataTables.responsive.min.js"></script>
+    <script src="~/assets/plugins/datatables/responsive.bootstrap.min.js"></script>
+    <script src="~/assets/plugins/datatables/dataTables.scroller.min.js"></script>
+
+    <!-- Datatable init js -->
+    <script src="~/assets/pages/datatables.init.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#datatable').dataTable({ "order": [[0, 'desc']] }); // forces descending sorting on the 1st column, creation date.
+            $('#datatable-keytable').DataTable({ keys: true });
+            $('#datatable-responsive').DataTable();
+            $('#datatable-scroller').DataTable({ ajax: "assets/plugins/datatables/json/scroller-demo.json", deferRender: true, scrollY: 380, scrollCollapse: true, scroller: true });
+            var table = $('#datatable-fixed-header').DataTable({ fixedHeader: true });
+        });
+        TableManageButtons.init();
+
+    </script>
+}

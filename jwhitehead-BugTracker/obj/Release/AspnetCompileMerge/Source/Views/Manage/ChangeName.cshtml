@@ -1,0 +1,29 @@
+﻿@model jwhitehead_BugTracker.Models.ChangeNameViewModel
+
+@{
+    ViewBag.Title = "ChangeName";
+}
+
+@using (Html.BeginForm("ChangeName", "Manage", FormMethod.Post, new { @class = "formhorizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <h2>ChangeName</h2>
+    <hr />
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(m => m.NewName, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.EditorFor(m => m.NewName, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-oﬀset-2 col-md-10">
+            <input type="submit" value="Change Name" class="btn btn-primary" />
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

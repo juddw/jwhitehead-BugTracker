@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <parameters>
-  <parameter name="DefaultConnection-Web.config Connection String" description="DefaultConnection Connection String used in web.config by the application to access the database." defaultValue="Server=coderfoundry.cloudapp.net,55555;Database=jwhitehead-bugtracker;       User ID=jwhitehead;         Password=nuCar33r;         Persist Security Info=True;         Connection Timeout=30;         TrustServerCertificate=True;" tags="SqlConnectionString">
-    <parameterEntry kind="XmlFile" scope="C:\\Users\\Judd\ Whitehead\\Documents\\Visual\ Studio\ 2017\\Projects\\jwhitehead-BugTracker\\jwhitehead-BugTracker\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='DefaultConnection']/@connectionString" />
+  <parameter name="bugTracker-Web.config Connection String" description="bugTracker Connection String used in web.config by the application to access the database." defaultValue="Data Source=SQL7001.site4now.net;Initial Catalog=DB_A31ED3_bugTracker;User Id=DB_A31ED3_bugTracker_admin;Password=nuCar33r!" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\Users\\Judd\ Whitehead\\Documents\\Visual\ Studio\ 2017\\Projects\\jwhitehead-BugTracker\\jwhitehead-BugTracker\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='bugTracker']/@connectionString" />
   </parameter>
 </parameters>

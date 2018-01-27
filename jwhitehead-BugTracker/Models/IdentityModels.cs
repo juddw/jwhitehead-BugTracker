@@ -52,7 +52,7 @@ namespace jwhitehead_BugTracker.Models
     {
         // this is found in the Web.config  inside the <connectionStrings>
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+            : base("bugTracker", throwIfV1Schema: false)
         {
         }
 

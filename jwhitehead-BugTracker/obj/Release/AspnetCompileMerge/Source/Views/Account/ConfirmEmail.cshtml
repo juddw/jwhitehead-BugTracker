@@ -1,0 +1,17 @@
+﻿@{
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+    ViewBag.Title = "Confirm Email";
+}
+
+<div id="LoginWindowBanner">
+    <h2 style="color: white; font-weight: 500;">@ViewBag.Title.</h2>
+</div>
+
+<div id="loginForm" style="padding: 20px;">
+    <p>
+        Thank you for confirming your email. Please click the button to Log in.
+    </p>
+    <div style="text-align: center;">
+        <a href="@Url.Action("Login","Account")" class="btn btn-primary" style="margin-top: 30px;">Log in</a>
+    </div>
+</div>
